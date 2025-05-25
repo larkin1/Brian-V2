@@ -1,12 +1,15 @@
 from Commands import commands
-## Funct to call when a command is received
 
-def route_command(command: str, *args, **kwargs):
+def route_command(text: str, *args, **kwargs):
     """
     Routes the command to the appropriate function based on the command name.
     """
-    # Check if the command exists in the commands dictionary
-    if command in commands:
-        return commands[command](*args, **kwargs)
-    else:
-        raise ValueError(f"Command '{command}' not found.")
+
+    if not text.startswith("!"): # Ensure the command starts with '!'
+        raise ValueError("Command must start with '!'")
+    
+    for i in commands: # Iterate through the commands dictionary and run the command if it matches any of the keys
+        if text.startswith(f"!{i}"):
+            return commands[i](*args, **kwargs)
+        
+    raise ValueError(f"Command not found.") # This will raise an error if the command is not found in the commands dictionary.
