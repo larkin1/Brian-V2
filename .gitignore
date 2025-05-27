@@ -1,2 +1,6 @@
 Whitelist.txt
 plusList.txt
+__pycache__/
+YT/__pycache__/
+RESOURCES/__pycache__/
+AI/__pycache__/
