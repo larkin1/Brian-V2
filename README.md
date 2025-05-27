@@ -5,7 +5,7 @@
 Brian is a lil chatbot for whatsapp that i created to learn how to code... this is the second iteration of that, with better structure to the code and an easier way of doing things. 
 
 ## What can Brian do?
-Not much at the moment, currently brian is mainly just a shell waiting to be filled with commands.
+Not much at the moment, currently brian is just a shell waiting to be filled with commands.
 
 ## To-do:
 ### Features:
