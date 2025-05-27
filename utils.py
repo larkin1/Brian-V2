@@ -1,3 +1,5 @@
+# Utilities for the bot.
+
 class Colors:
     """Class of ALL the colors used in the console output."""
     Default = "\x1b[39m"
@@ -22,7 +24,7 @@ def printMessage(message, user, username):
     """
     Prints the message to the console with color coding based on whether the user is a user or not.
     """
-    whitelist = open("Whitelist.txt", "r").read().splitlines()
+    whitelist = open("RESOURCES/Whitelist.txt", "r").read().splitlines()
     if user not in whitelist:
         if message[0] == "!":
             print(f"{Colors.White}{(f"{Colors.Red}[Command] {Colors.White}" + username + ':')} {Colors.Blue}{message}{Colors.White}")

@@ -1,3 +1,5 @@
+# Function to generate a song using ACE-Step
+
 def getsong(prompt: str, duration: str, lyrics:str) -> str:
     """Generates a song using ACE-Step. Returns the path to the song file."""
     from gradio_client import Client # We import this here for a faster startup time as it is not commonly used.
