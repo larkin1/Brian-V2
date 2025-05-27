@@ -9,16 +9,10 @@ commands = {
         ["Aight bro, why did you even do this one?"]),
 
     "song": (YT.Downloads.song, 
-        ["Downloads a song from YouTube.",
-        "Usage: !song <YouTube URL>",
-        "Example: !song https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        "Returns: A downloaded song file."]),
+        ["NOT CURRENTLY IMPLEMENTED",]),
 
     "musicgen": (AI.musicgen.musicgen, 
-        ["Generates a song using AI.",
-        "Usage: !musicgen <prompt> <duration> <lyrics>",
-        "Example: !musicgen 'A happy song' 30 'Happy lyrics'",
-        "Returns: A generated song file."]),
+        ["NOT CURRENTLY IMPLEMENTED",]),
     
     "test": (testfuncts.test, 
         ["Spams"]),
