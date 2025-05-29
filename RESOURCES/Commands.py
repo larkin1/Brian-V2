@@ -13,7 +13,7 @@ commands = {
 
     "musicgen": (AI.musicgen.musicgen, 
         ["NOT CURRENTLY IMPLEMENTED",]),
-    
+
     "test": (testfuncts.test, 
         ["Spams"]),
 }
