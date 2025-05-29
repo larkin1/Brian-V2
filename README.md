@@ -7,6 +7,9 @@ Brian is a lil chatbot for whatsapp that i created to learn how to code... this 
 ## What can Brian do?
 Not much at the moment, currently brian is just a shell waiting to be filled with commands.
 
+## Where is Brian v1?
+In the deepest, darkest depths of my dusty old computer, never to be seen by anyone but myself 😉
+
 ## To-do:
 ### Features:
  - Song Downloader
