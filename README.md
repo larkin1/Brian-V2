@@ -18,5 +18,5 @@ Not much at the moment, currently brian is just a shell waiting to be filled wit
  - Back-and-forth chatting. (eg the bot asks "are you sure you want to procede?")
  - Make my own whatsapp api so i can actually have control over it
  - Get a virtual phone number so it doesnt run on my personal number
- - Put it on a web server
+ - Put it on a server
  - Subscription tiers
