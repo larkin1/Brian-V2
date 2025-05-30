@@ -1,5 +1,5 @@
 debug_mode = input("Start in Debug mode? (y/n): ") # I put this up here to make it show up faster becasue i'm impatient.
-from wa_automate_socket_client import SocketClient
+from wa_automate_socket_client import SocketClient # type: ignore
 import utils, Routing, DbMgmt, datetime
 
 if debug_mode.lower().strip() == "y":
@@ -9,6 +9,8 @@ else:
 
 MyNumber = 'REDACTED@c.us'
 client = SocketClient('http://localhost:8085/', 'secure_api_key') # YOU HAVE TO RUN EASY API BEFORE THIS IS CALLED (and i don't know how to run it from this script hehe)
+# https://github.com/open-wa/wa-automate-socket-client-python
+# npx @open-wa/wa-automate --socket -p 8085 -k secure_api_key
 
 def handle_new_message(msg):
     # Get the data into a more useable dict.
@@ -20,13 +22,16 @@ def handle_new_message(msg):
     # Print the message using the correct format, depending on user status and other variables
     utils.printMessage(data['text'], data['authorId'], data['senderName'])
     
+    chat = data["chatId"]
+    skipCheck = data['authorId'] == MyNumber # If it's the admin, skip the whitelist check.
+
     # If the message is a suspected comand...
     if data["text"][0] == "!":
         if debug_mode: # If in debug mode, just try to run the command...
-            Routing.route_command(data['text'], data, client)
+            Routing.route_command(data['text'], chat, skipCheck, data, client)
         else: # otherwise, run it with error detection.
             try:
-                Routing.route_command(data['text'], data, client)
+                Routing.route_command(data['text'], chat, skipCheck, data, client)
             except Exception as e:
                 print(f"{utils.Colors.White}{utils.Colors.Red}[Error] {utils.Colors.White}{e.__class__.__name__}: {utils.Colors.Blue}{e}{utils.Colors.White}")
 
