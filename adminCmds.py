@@ -5,10 +5,7 @@ def whitelist(data, client):
     whitelistData = open("RESOURCES/Whitelist.txt", "r")
     whitelistClean = [i.strip().strip("\n") for i in whitelistData.readlines()]
     whitelistData.close()
-    
     whitelist = open("RESOURCES/Whitelist.txt", "+a")
-    
-    print(whitelistClean)
     if str(chat) not in whitelistClean:
         whitelist.write(f"{chat}\n")
         client.sendText(chat, f"Added `{chat}` to the Whitelist!")
