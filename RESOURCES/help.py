@@ -5,10 +5,17 @@ def help(data, client):
     from RESOURCES.Commands import commands
 
     if data["text"].lower().strip() == "!help":
-        commandList = "".join([i+"\n" for i in commands.keys()]).strip("\n")
+        commandList = "\n".join(
+            f"- `!{i}`: _{commands[i][2]}_" if len(commands[i]) > 2 and commands[i][2] 
+            else f"`!{i}`" for i in commands
+        )
 
-        text = f"""Hi, I'm Brian,
-To view the details and usage of a specific command, type !help <command_name>
+        text = f"""*Hi, I'm Brian II (The second)*
+        
+To learn more about a command and how to use it, type:
+`!help <command_name>`
+
+*Available commands:*
 
 {commandList}
 """

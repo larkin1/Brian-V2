@@ -87,7 +87,7 @@ def newGetMessageData(msg):
     """Fetches and returns the message data from the received message."""
     
     text = msg.get("body")
-    authorId = msg.get("sender").get("_serialized")
+    authorId = msg.get("sender").get("id").get("_serialized")
     authorName = msg.get("sender").get("name")
     chatId = msg.get("chatId").get("_serialized")
     messageId = msg.get("id")
@@ -98,7 +98,10 @@ def newGetMessageData(msg):
         quotedText = msg.get("quotedMsg").get("body")
         quotedMessageId = msg.get("quotedMsgId")    
         quotedparticipant = msg.get("quotedParticipant")
-        quotedChatId = quotedMessageId.split("_")[1]
+        try:
+            quotedChatId = quotedMessageId.split("_")[1]
+        except:
+            quotedChatId = None
     
     data = {
         'raw': msg,

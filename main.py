@@ -1,15 +1,19 @@
-import utils, Routing, DbMgmt, datetime, time
+import utils, Routing, DbMgmt, datetime, time, RESOURCES.help
 from WPP_Whatsapp import Create
 
 # brian\scripts\activate
 
 MyNumber = 'REDACTED@c.us'
+MyNumbers = ['REDACTED@c.us', 'REDACTED@lid']
 
 creator = Create(session="brianv2", browser='chrome', headless=True, catchQR=utils.catchQR, logQR=True, qr='terminal')
 client = creator.start()
 
 def handle_new_message(msg):
-    if str(msg.get("chatId").get("_serialized")) != "status@broadcast" and msg.get("body"):
+    """Function to handle new messages received by the client."""
+    global client
+    
+    if str(msg.get("chatId").get("_serialized")) != "status@broadcast" and msg.get("body"): # checking that the message is valid and not a status message
         # Get the data into a more useable dict.
         data = utils.newGetMessageData(msg)
 
@@ -22,14 +26,14 @@ def handle_new_message(msg):
                     DbMgmt.saveRecord(data['chatId'], datetime.datetime.now(datetime.UTC).timestamp(), data['text'], data['authorId'])
                     break
                 except: time.sleep(i)
-                
-        # Print the message using the correct format, depending on user status and other variables
 
+        # Print the message using the correct format, depending on user status and other variables
         utils.printMessage(data['text'], data['authorId'], data['authorName'])
 
         chat = data["chatId"]
-        skipCheck = data['authorId'] == MyNumber # If it's the admin, skip the whitelist check.
 
+        skipCheck = str(data['authorId']) in MyNumbers # If it's the admin, skip the whitelist check.
+        
         # If the message is a suspected comand...
         if data["text"][0] == "!":
             try:
