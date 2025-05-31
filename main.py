@@ -1,40 +1,49 @@
-debug_mode = input("Start in Debug mode? (y/n): ") # I put this up here to make it show up faster becasue i'm impatient.
-from wa_automate_socket_client import SocketClient # type: ignore
-import utils, Routing, DbMgmt, datetime
+import utils, Routing, DbMgmt, datetime, time
+from WPP_Whatsapp import Create
 
-if debug_mode.lower().strip() == "y":
-    debug_mode = True
-else: 
-    debug_mode = False
+# brian\scripts\activate
 
 MyNumber = 'REDACTED@c.us'
-client = SocketClient('http://localhost:8085/', 'secure_api_key') # YOU HAVE TO RUN EASY API BEFORE THIS IS CALLED (and i don't know how to run it from this script hehe)
-# https://github.com/open-wa/wa-automate-socket-client-python
-# npx @open-wa/wa-automate --socket -p 8085 -k secure_api_key
+
+creator = Create(session="brianv2", browser='chrome', headless=True, catchQR=utils.catchQR, logQR=True, qr='terminal')
+client = creator.start()
 
 def handle_new_message(msg):
-    # Get the data into a more useable dict.
-    data = utils.getMessageData(msg)
+    if str(msg.get("chatId").get("_serialized")) != "status@broadcast" and msg.get("body"):
+        # Get the data into a more useable dict.
+        data = utils.newGetMessageData(msg)
 
-    # Save the message to the database
-    DbMgmt.saveRecord(data['chatId'], datetime.datetime.now(datetime.UTC).timestamp(), data['text'], data['authorId'])
+        # Save the message to the database (if the database is already in use, it retries up to 10 times with a backoff).
+        try:
+            DbMgmt.saveRecord(data['chatId'], datetime.datetime.now(datetime.UTC).timestamp(), data['text'], data['authorId'])
+        except:
+            for i in range(10):
+                try:
+                    DbMgmt.saveRecord(data['chatId'], datetime.datetime.now(datetime.UTC).timestamp(), data['text'], data['authorId'])
+                    break
+                except: time.sleep(i)
+                
+        # Print the message using the correct format, depending on user status and other variables
 
-    # Print the message using the correct format, depending on user status and other variables
-    utils.printMessage(data['text'], data['authorId'], data['senderName'])
-    
-    chat = data["chatId"]
-    skipCheck = data['authorId'] == MyNumber # If it's the admin, skip the whitelist check.
+        utils.printMessage(data['text'], data['authorId'], data['authorName'])
 
-    # If the message is a suspected comand...
-    if data["text"][0] == "!":
-        if debug_mode: # If in debug mode, just try to run the command...
-            Routing.route_command(data['text'], chat, skipCheck, data, client)
-        else: # otherwise, run it with error detection.
+        chat = data["chatId"]
+        skipCheck = data['authorId'] == MyNumber # If it's the admin, skip the whitelist check.
+
+        # If the message is a suspected comand...
+        if data["text"][0] == "!":
             try:
                 Routing.route_command(data['text'], chat, skipCheck, data, client)
             except Exception as e:
                 print(f"{utils.Colors.White}{utils.Colors.Red}[Error] {utils.Colors.White}{e.__class__.__name__}: {utils.Colors.Blue}{e}{utils.Colors.White}")
 
-client.onAnyMessage(handle_new_message) # When a message is received, process it using the above function.
-client.sendText(MyNumber, "Brian Initialised") # Let the owner know the bot is running.
-client.io.wait() # Wait for the next message to prevent the script from just stopping.
+if creator.state != 'CONNECTED':
+    raise Exception(creator.state)
+
+print("Initialised the client successfully!")
+
+client.sendText(MyNumber, "Brian (v2) started successfully!")
+
+# Add Listen To New Message
+creator.client.onAnyMessage(handle_new_message)
+creator.loop.run_forever()
