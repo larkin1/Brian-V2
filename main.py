@@ -1,4 +1,4 @@
-import utils, Routing, DbMgmt, datetime, time, RESOURCES.help
+import utils, Routing, DbMgmt, datetime, time
 from WPP_Whatsapp import Create
 
 # brian\scripts\activate

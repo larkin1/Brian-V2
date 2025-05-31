@@ -1,1 +1,2 @@
-wa-automate-socket-client
+WPP_Whatsapp
+gradio_client

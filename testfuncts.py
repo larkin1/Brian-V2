@@ -1,4 +1,3 @@
-import time
 # Testing ground for new features and functions.
 
 def test(data, client):
