@@ -1,4 +1,4 @@
-import utils, Routing, DbMgmt, datetime, time
+import utils, Routing, DbMgmt, datetime, time, threading, exeQueue
 from WPP_Whatsapp import Create
 
 # brian\scripts\activate
@@ -43,6 +43,8 @@ def handle_new_message(msg):
 
 if creator.state != 'CONNECTED':
     raise Exception(creator.state)
+
+executor = threading.Thread(target=exeQueue.jobProcessor).start()
 
 print("Initialised the client successfully!")
 

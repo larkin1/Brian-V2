@@ -1,5 +1,5 @@
 from RESOURCES.Commands import userCommands, adminCommands
-import utils
+import utils, exeQueue
 # This file contains the routing logic for commands in the bot.
 
 def route_command(text: str, chat: str, skip_whitelist_check: bool, *args, **kwargs):
@@ -12,11 +12,13 @@ def route_command(text: str, chat: str, skip_whitelist_check: bool, *args, **kwa
     if skip_whitelist_check:
         for i in adminCommands: # Iterate through the commands dictionary and run the command if it matches any of the keys
             if text.startswith(f"!{i}"):
-                return adminCommands[i][0](*args, **kwargs)
-            
+                exeQueue.addItem(adminCommands[i][0], *args, **kwargs)
+                return
+
     elif chat in whitelist:
         for i in userCommands: # Iterate through the commands dictionary and run the command if it matches any of the keys
             if text.startswith(f"!{i}"):
-                return userCommands[i][0](*args, **kwargs)
+                exeQueue.addItem(userCommands[i][0], *args, **kwargs)
+                return
 
     print(f"{utils.Colors.White}{utils.Colors.Red}[Error] {utils.Colors.White}{"System"}: {utils.Colors.Blue}{"Command Not Found!"}{utils.Colors.White}")
