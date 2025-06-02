@@ -1,5 +1,5 @@
-from RESOURCES.Commands import userCommands, adminCommands
-import utils, exeQueue
+from BOT.Commands import userCommands, adminCommands
+import BOT.utils as utils, BOT.exeQueue as exeQueue
 # This file contains the routing logic for commands in the bot.
 
 def route_command(text: str, chat: str, skip_whitelist_check: bool, *args, **kwargs):
@@ -7,7 +7,7 @@ def route_command(text: str, chat: str, skip_whitelist_check: bool, *args, **kwa
     Routes the command to the appropriate function based on the command name.
     """
 
-    whitelist = open("RESOURCES/Whitelist.txt", "r").read().splitlines()
+    whitelist = open("BOT/Whitelist.txt", "r").read().splitlines()
 
     if skip_whitelist_check:
         for i in adminCommands: # Iterate through the commands dictionary and run the command if it matches any of the keys

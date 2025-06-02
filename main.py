@@ -1,4 +1,4 @@
-import utils, Routing, DbMgmt, datetime, time, threading, exeQueue
+import BOT.utils as utils, BOT.Routing as Routing, BOT.DbMgmt as DbMgmt, datetime, time, threading, BOT.exeQueue as exeQueue
 from WPP_Whatsapp import Create
 
 # brian\scripts\activate

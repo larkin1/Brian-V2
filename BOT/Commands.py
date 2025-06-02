@@ -1,19 +1,19 @@
-import YT.Downloads, AI.musicgen, testfuncts, RESOURCES.help, adminCmds
+import BOT.YT.Downloads as Downloads, BOT.AI.musicgen as musicgen, testfuncts, BOT.help as help, BOT.adminCmds as adminCmds
 # This file contains the command mappings for the bot.
 # Each command is associated with a function that will be executed when the command is called.
 # For each command, the first element is the function to call, the second element is a list of help messages, and the thirs is a short descriptor string.
 # Help messages are send individually one by one to the user when they request help for a specific command.
 
 userCommands = {
-    "help": (RESOURCES.help.help, 
+    "help": (help.help, 
         ["Aight bro, why did you even do this one?"],
         "Helper Command"),
 
-    "song": (YT.Downloads.song, 
+    "ds": (Downloads.dls, 
         ["NOT CURRENTLY IMPLEMENTED",],
         "Download a song."),
 
-    "musicgen": (AI.musicgen.musicgen, 
+    "musicgen": (musicgen.musicgen, 
         ["NOT CURRENTLY IMPLEMENTED",],
         "Generate music using AI."),
 
