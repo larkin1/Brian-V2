@@ -8,7 +8,7 @@ from WPP_Whatsapp import Create # REMOVE, for reference only
 
 bannedchars = "<>:\"/\\|?*"
 
-def zipfolder(path, maxSize=None, savePath="", name="Zipped"):
+def zipFolder(path, maxSize=None, savePath="", name="Zipped"):
     """ 
     Returns A Number of zip file paths in a list
     if the size of the files in a folder is greater than maxSize, multiple Zip files are created.
@@ -105,10 +105,12 @@ def dls(data: dict, client):
         if errors:
             songstr += "\n\n*The following requests errored:*" + "".join(errs) + "\n\n_Please check spelling or broaden search terms and try again with the above._"
 
-
-
         client.sendText(data['chatId'], songstr, {"quotedMsg":data['messageId']})
-                
+        
+        # path = next(gen)
+        
+        # zipPath = zipFolder(path, 100000000, path, "Zip")
+        
         
         
     
