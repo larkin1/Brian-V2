@@ -1,6 +1,6 @@
 import sqlite3
 
-def saveRecord(id: str, timestamp: int, text: str, user: str, file: str = "Messages.db") -> None:
+def saveRecord(id: str, timestamp: int, text: str, user: str, messageId:str, file: str = "Messages.db") -> None:
     """Save a Record to the database. IF the database specified is uncreated, it creates one."""
     conn = sqlite3.connect(file)
     cursor = conn.cursor()
@@ -9,14 +9,15 @@ CREATE TABLE IF NOT EXISTS messages (
     chat_id TEXT,
     text TEXT,
     timestamp INTEGER,
-    sender TEXT
+    sender TEXT,
+    message_id TEXT
 )
 """)
     conn.commit()
     
     cursor.execute("""
-INSERT INTO messages (chat_id, text, timestamp, sender) VALUES (?, ?, ?, ?)
-""", (id, text, timestamp, user))
+INSERT INTO messages (chat_id, text, timestamp, sender, message_id) VALUES (?, ?, ?, ?)
+""", (id, text, timestamp, user, messageId))
     
     conn.commit()
 

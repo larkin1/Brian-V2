@@ -19,11 +19,11 @@ def handle_new_message(msg):
 
         # Save the message to the database (if the database is already in use, it retries up to 10 times with a backoff).
         try:
-            DbMgmt.saveRecord(data['chatId'], datetime.datetime.now(datetime.UTC).timestamp(), data['text'], data['authorId'])
+            DbMgmt.saveRecord(data['chatId'], datetime.datetime.now(datetime.UTC).timestamp(), data['text'], data['authorId'], data['messageId'])
         except:
             for i in range(10):
                 try:
-                    DbMgmt.saveRecord(data['chatId'], datetime.datetime.now(datetime.UTC).timestamp(), data['text'], data['authorId'])
+                    DbMgmt.saveRecord(data['chatId'], datetime.datetime.now(datetime.UTC).timestamp(), data['text'], data['authorId'], data['messageId'])
                     break
                 except: time.sleep(i)
 

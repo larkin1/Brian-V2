@@ -1,2 +1,4 @@
 WPP_Whatsapp
 gradio_client
+yt-dlp
+ytmusicapi
