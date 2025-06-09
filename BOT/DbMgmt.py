@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS messages (
     conn.commit()
     
     cursor.execute("""
-INSERT INTO messages (chat_id, text, timestamp, sender, message_id) VALUES (?, ?, ?, ?)
+INSERT INTO messages (chat_id, text, timestamp, sender, message_id) VALUES (?, ?, ?, ?, ?)
 """, (id, text, timestamp, user, messageId))
     
     conn.commit()

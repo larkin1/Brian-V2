@@ -1,5 +1,5 @@
 from ytmusicapi import YTMusic
-import yt_dlp, os, zipfile, BOT.utils as utils
+import yt_dlp, os, zipfile, BOT.utils as utils, concurrent.futures
 
 import time
 from WPP_Whatsapp import Create # REMOVE, for reference only
@@ -52,6 +52,26 @@ def zipFolder(path, maxSize=None, savePath="", name="Zipped"):
         path.append(f"{savePath}\\{name}{zipnum}.zip")
     return path
 
+music = YTMusic('BOT/YT/YtMusicAuth.json')
+
+def songLookup(songs: list) -> tuple:
+    """Uses the YT music search api to lookup songs and return a list. the first result in the tuple is the songs, and the second is the errors."""
+    
+    results = []
+    errors = []
+    
+    def safe_search(item):
+        try:
+            return music.search(item, filter='songs')
+        except Exception as e:
+            errors.append((item, str(e)))
+            return None
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        
+        results = list(executor.map(safe_search, songs))
+    
+    return (results, errors)
 
 def songDl(searchTerm: str) -> str:
     """Downloads a single song from a search result and returns the file path.
@@ -63,8 +83,6 @@ def songDl(searchTerm: str) -> str:
         str: The path of the downloaded song. 
     """
     
-
-
 def multiSongDl(songs: list):
     """Downloads Songs from search terms to a dir, and returns the dir.
 
@@ -72,14 +90,16 @@ def multiSongDl(songs: list):
         songs (list): A list of Search terms as strings.
     """
     time.sleep(1)
+    songLookup([])
     yield [{"title":"Song1", "artName":"Art1"}, {"title":"Song2", "artName":"Art2"}, {"title":"Song3", "artName":"Art3"}]
     yield [i for i in songs]
+    yield "Testv2.zip"
     pass
 
 
 
 def dls(data: dict, client):
-        
+    songLookup([])
     request = str(data['text']).removeprefix('!dls').strip()
     requestIsMulti = len(request.splitlines()) > 1
     
@@ -107,9 +127,17 @@ def dls(data: dict, client):
 
         client.sendText(data['chatId'], songstr, {"quotedMsg":data['messageId']})
         
-        # path = next(gen)
+        path = next(gen)
         
         # zipPath = zipFolder(path, 100000000, path, "Zip")
+        
+        print("eeee")
+        
+        # client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], 'filename':"Songs.zip"}, timeout=60*20)
+        client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], 'filename':"Songs.zip"}, f"{path}", timeout=60*20)
+        
+        print("bbbb")
+
         
         
         
