@@ -1,6 +1,6 @@
 import sqlite3
 
-def saveRecord(id: str, timestamp: int, text: str, user: str, messageId:str, file: str = "Messages.db") -> None:
+def saveRecord(chatId: str, timestamp: int, text: str, user: str, messageId:str, file: str = "Messages.db") -> None:
     """Save a Record to the database. IF the database specified is uncreated, it creates one."""
     conn = sqlite3.connect(file)
     cursor = conn.cursor()
@@ -17,11 +17,12 @@ CREATE TABLE IF NOT EXISTS messages (
     
     cursor.execute("""
 INSERT INTO messages (chat_id, text, timestamp, sender, message_id) VALUES (?, ?, ?, ?, ?)
-""", (id, text, timestamp, user, messageId))
+""", (chatId, text, timestamp, user, messageId))
     
     conn.commit()
 
-def getAllMessagesFromChat(id: str, user: str = None, fromTimestamp: int = None, file: str = "Messages.db") -> list:
+def getAllMessagesFromChat(chatId: str, user: str = None, fromTimestamp: int = None, file: str = "Messages.db") -> list:
+    """Fetch all messages from a given chat. Can get messages from a Specified timestamp, and from a specific user if these options are specified."""
     conn = sqlite3.connect(file)
     c = conn.cursor()
     
@@ -32,9 +33,23 @@ def getAllMessagesFromChat(id: str, user: str = None, fromTimestamp: int = None,
         timestampCmd = f"AND timestamp>={fromTimestamp}"
     else: timestampCmd = ""
     
-    results = c.execute(f"SELECT * FROM messages WHERE chat_id=? {userCmd} {timestampCmd} ORDER BY timestamp", (id,))
+    results = c.execute(f"SELECT * FROM messages WHERE chat_id=? {userCmd} {timestampCmd} ORDER BY timestamp", (chatId,))
     
     return results
 
+def retrieveLatestMessage(file: str = "Messages.db") -> dict:
+    """Find the most recent message in the database."""
+    
+    conn = sqlite3.connect(file)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    
+    result = c.execute("SELECT * FROM messages ORDER BY timestamp DESC LIMIT 1")
+    row = result.fetchone()
+    conn.close()
+    return dict(row) if row else None
+
 if __name__ == "__main__":
-    saveRecord("TestChat", 1, "Testing Text", "TestUser")
+    saveRecord("TestChat2", 3, "Testing Text2", "TestUser2", "2323232323_23@c.id")
+    print(retrieveLatestMessage())
+    

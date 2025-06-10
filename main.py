@@ -9,6 +9,9 @@ MyNumbers = ['REDACTED@c.us', 'REDACTED@lid']
 creator = Create(session="brianv2", browser='chrome', headless=True, catchQR=utils.catchQR, logQR=True, qr='terminal')
 client = creator.start()
 
+if creator.state != 'CONNECTED':
+    raise Exception(creator.state)
+
 def handle_new_message(msg):
     """Function to handle new messages received by the client."""
     global client
@@ -41,8 +44,8 @@ def handle_new_message(msg):
             except Exception as e:
                 print(f"{utils.Colors.White}{utils.Colors.Red}[Error] {utils.Colors.White}{e.__class__.__name__}: {utils.Colors.Blue}{e}{utils.Colors.White}")
 
-if creator.state != 'CONNECTED':
-    raise Exception(creator.state)
+client.setLimit('maxFileSize', 104857600) # Sets the maximum file size to 1GB
+client.setLimit('maxMediaSize', 16777216) # Sets the maximum Media size to 70MB
 
 executor = threading.Thread(target=exeQueue.jobProcessor).start()
 
