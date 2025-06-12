@@ -1,4 +1,4 @@
-import BOT.YT.Downloads as Downloads, BOT.AI.musicgen as musicgen, testfuncts, BOT.help as help, BOT.adminCmds as adminCmds
+import BOT.YT.Downloads as Downloads, BOT.AI.musicgen as musicgen, BOT.help as help, BOT.adminCmds as adminCmds, BOT.testfuncts as testfuncts
 # This file contains the command mappings for the bot.
 # Each command is associated with a function that will be executed when the command is called.
 # For each command, the first element is the function to call, the second element is a list of help messages, and the thirs is a short descriptor string.
