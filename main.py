@@ -5,7 +5,6 @@ from WPP_Whatsapp import Create
 
 MyNumber = 'REDACTED@c.us'
 MyNumbers = ['REDACTED@c.us', 'REDACTED@lid']
-
 creator = Create(session="brianv2", browser='chrome', headless=True, catchQR=utils.catchQR, logQR=True, qr='terminal')
 client = creator.start()
 
