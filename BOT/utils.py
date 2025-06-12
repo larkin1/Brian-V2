@@ -82,11 +82,11 @@ def printCode(code):
     print(code)
 
 def catchQR(qrCode: str, asciiQR: str, attempt: int, urlCode: str):
-    import qrterm
+    # import qrterm
     """Catches a QR code and prints it to the console."""
-    qrterm.draw(qrCode)
-    # for line in asciiQR.splitlines():
-    #     print(line)
+    # qrterm.draw(qrCode)
+    for line in asciiQR.splitlines():
+        print(line)
         
 def newGetMessageData(msg):
     """Fetches and returns the message data from the received message."""
