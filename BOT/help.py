@@ -13,7 +13,7 @@ def help(data, client):
         text = f"""*Hi, I'm Brian II (The second)*
         
 To learn more about a command and how to use it, type:
-`!help <command_name>`
+`!help <Command name>`
 
 *Available commands:*
 

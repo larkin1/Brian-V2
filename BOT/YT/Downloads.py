@@ -123,7 +123,7 @@ def dls(data: dict, client):
             for idx, err in enumerate(errors)
         ]
         if errors:
-            songstr += "\n\n*The following requests errored:*" + "".join(errs) + "\n\n_Please check spelling or broaden search terms and try again with the above._"
+            songstr += "\n\n*The following requests errored:*" + "".join(errs) + "\n\n_Please check spelling or broaden search terms and try again for the errored items._"
 
         client.sendText(data['chatId'], songstr, {"quotedMsg":data['messageId']})
         

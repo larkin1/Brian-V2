@@ -6,7 +6,7 @@ def addItem(command, *args, **kwargs):
     """Add an item to the queue."""
     q.put((command, args, kwargs))
 
-def jobProcessor(max_threads=8):
+def jobProcessor(max_threads=4):
     with ThreadPoolExecutor(max_workers=max_threads) as executor:
         futures = set()
         while True:
