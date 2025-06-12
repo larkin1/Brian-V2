@@ -79,9 +79,11 @@ def getMessageData(msg):
     return data
 
 def catchQR(qrCode: str, asciiQR: str, attempt: int, urlCode: str):
+    import qrcode_terminal
     """Catches a QR code and prints it to the console."""
-    for line in asciiQR.splitlines():
-        print(line)
+    qrcode_terminal.draw(qrCode, small=True)
+    # for line in asciiQR.splitlines():
+    #     print(line)
         
 def newGetMessageData(msg):
     """Fetches and returns the message data from the received message."""
