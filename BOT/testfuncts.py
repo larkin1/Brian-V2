@@ -7,7 +7,7 @@ def test(data, client):
         print(message.get("id"))
         for i in range(10):
             time.sleep(0.2)
-            client.editMessage(data.get("messageId"), f"Test Number: {str(i)}")
+            client.editMessage(message.get("id").removesuffix("_out"), f"Test Number: {str(i)}")
     except Exception as e: print(e)
 
 from ytmusicapi import YTMusic
