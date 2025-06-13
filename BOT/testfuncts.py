@@ -4,10 +4,10 @@ import time
 def test(data, client):
     try:
         message = client.sendText(data.get("chatId"), "test meddahe")
-        for i in range(100):
+        print(message.get("id"))
+        for i in range(10):
             time.sleep(0.2)
-            print(message.get("id"))
-            client.editMessage(message.get("id"), f"Test Number: {str(i)}")
+            client.editMessage(data.get("messageId"), f"Test Number: {str(i)}")
     except Exception as e: print(e)
 
 from ytmusicapi import YTMusic
