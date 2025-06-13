@@ -3,7 +3,7 @@ import time, asyncio
 
 def test(data, client):
     try:
-        from main import main_loop
+        from BOT.globals import main_loop
         loop = main_loop
         message = client.sendText(data.get("chatId"), "test meddahe")
         print(message.get("id"))
