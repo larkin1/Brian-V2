@@ -1,9 +1,6 @@
-import BOT.utils as utils, BOT.Routing as Routing, BOT.DbMgmt as DbMgmt, datetime, time, threading, BOT.exeQueue as exeQueue
+import BOT.utils as utils, BOT.Routing as Routing, BOT.DbMgmt as DbMgmt, datetime, time, threading, BOT.exeQueue as exeQueue, BOT.globals as globals
 from WPP_Whatsapp import Create
-import asyncio
 # brian\scripts\activate
-
-main_loop = asyncio.get_event_loop()
 
 MyNumber = 'REDACTED@c.us'
 MyNumbers = ['REDACTED@c.us', 'REDACTED@lid']
@@ -58,5 +55,9 @@ print("Initialised the client successfully!")
 client.sendText(MyNumber, "Brian (v2) started successfully!")
 
 # Add Listen To New Message
+
 creator.client.onAnyMessage(handle_new_message)
+
+globals.main_loop = creator.loop
+
 creator.loop.run_forever()
