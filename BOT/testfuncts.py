@@ -3,7 +3,8 @@ import time, asyncio
 
 def test(data, client):
     try:
-        loop = asyncio.get_event_loop()
+        from main import main_loop
+        loop = main_loop
         message = client.sendText(data.get("chatId"), "test meddahe")
         print(message.get("id"))
         for i in range(10):

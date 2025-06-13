@@ -3,6 +3,8 @@ from WPP_Whatsapp import Create
 import asyncio
 # brian\scripts\activate
 
+main_loop = asyncio.get_event_loop()
+
 MyNumber = 'REDACTED@c.us'
 MyNumbers = ['REDACTED@c.us', 'REDACTED@lid']
 creator = Create(session="brianv2", browser='chrome', headless=True, catchQR=utils.catchQR, logQR=True, qr='terminal')
