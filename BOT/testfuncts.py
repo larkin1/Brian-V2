@@ -1,13 +1,19 @@
 # Testing ground for new features and functions.
-import time
+import time, asyncio
 
-async def test(data, client):
+def test(data, client):
     try:
-        message = await client.sendText(data.get("chatId"), "test meddahe")
+        loop = asyncio.get_event_loop()
+        message = client.sendText(data.get("chatId"), "test meddahe")
         print(message.get("id"))
         for i in range(10):
             time.sleep(0.2)
-            await client.editMessage(message.get("id").removesuffix("_out"), f"Test Number: {str(i)}")
+            future = asyncio.run_coroutine_threadsafe(
+                client.editMessage(message.get("id").removesuffix("_out"), f"Test Number: {str(i)}"),
+                loop
+            )
+            future.result()
+            
     except Exception as e: print(e)
 
 from ytmusicapi import YTMusic
