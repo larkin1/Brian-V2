@@ -1,13 +1,13 @@
 # Testing ground for new features and functions.
 import time
 
-def test(data, client):
+async def test(data, client):
     try:
-        message = client.sendText(data.get("chatId"), "test meddahe")
+        message = await client.sendText(data.get("chatId"), "test meddahe")
         print(message.get("id"))
         for i in range(10):
             time.sleep(0.2)
-            client.editMessage(message.get("id").removesuffix("_out"), f"Test Number: {str(i)}")
+            await client.editMessage(message.get("id").removesuffix("_out"), f"Test Number: {str(i)}")
     except Exception as e: print(e)
 
 from ytmusicapi import YTMusic
