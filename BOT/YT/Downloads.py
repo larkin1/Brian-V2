@@ -191,15 +191,11 @@ def dls(data: dict, client):
         errors = next(gen)
         
         songstr = "*Now downloading:*"
-        try:
-            
-            songNamesList = [
-                f"\n{idx+1}. {song['title']} - {song['artName']}"
-                for idx, song in enumerate(songNames)
-            ]
-        except Exception as error:
-            print(error)
-            print(songNames)
+        songNamesList = [
+            f"\n{idx+1}. {song['title']} - {song['artist']}"
+            for idx, song in enumerate(songNames)
+        ]
+
         songstr += "".join(songNamesList)
 
         errs = [
