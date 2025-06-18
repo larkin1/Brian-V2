@@ -38,19 +38,19 @@ def zipFolder(path, maxSize=None, savePath="", name="Zipped"):
         zipnum += 1
         if not os.path.exists(f"{savePath}"):
             os.mkdir(f"{savePath}")
-        with zipfile.ZipFile(f"{savePath}\\{name}{zipnum}.zip", "a", compression=zipfile.ZIP_DEFLATED) as zipf:
+        with zipfile.ZipFile(f"{savePath}/{name}{zipnum}.zip", "a", compression=zipfile.ZIP_DEFLATED) as zipf:
             for j in i:
                 if os.path.isfile(j):
-                    arcname = j[j.rfind("\\")+1:]
+                    arcname = j[j.rfind("/")+1:]
                     zipf.write(j, arcname)
                     os.remove(j)
                 else:
                     pass
                     print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}ZipError: {utils.Colors.Blue}Path: {j} does not exist. skipping...{utils.Colors.White}")
-        path.append(f"{savePath}\\{name}{zipnum}.zip")
+        path.append(f"{savePath}/{name}{zipnum}.zip")
     return path
 
-music = YTMusic('BOT\\YT\\YtMusicAuth.json')
+music = YTMusic('BOT/YT/YtMusicAuth.json')
 
 def songLookup(songs: list) -> tuple:
     """Uses the YT music search api to lookup songs and return a list. the first result in the tuple is the songs, and the second is the errors."""
@@ -79,7 +79,7 @@ def songLookup(songs: list) -> tuple:
         
     return (cookedResults, errors)
 
-def downloadSongs(songList: list, outputDir: str="TEMP\\YTMusicDownloads", maxWorkers: int=4):
+def downloadSongs(songList: list, outputDir: str="TEMP/YTMusicDownloads", maxWorkers: int=4):
     os.makedirs(outputDir, exist_ok=True)
     
     def download(song):
@@ -172,7 +172,7 @@ def multiSongDl(songs: list):
     
     paths = downloadSongs(results[0])
     
-    zip = zipFolder(paths, 10**8, "TEMP\\YTMusicZips", str(requestId))
+    zip = zipFolder(paths, 10**8, "TEMP/YTMusicZips", str(requestId))
     
     yield zip
 

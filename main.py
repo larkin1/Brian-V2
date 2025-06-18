@@ -42,12 +42,6 @@ def handle_new_message(msg):
             except Exception as e:
                 print(f"{utils.Colors.White}{utils.Colors.Red}[Error] {utils.Colors.White}{e.__class__.__name__}: {utils.Colors.Blue}{e}{utils.Colors.White}")
 
-# async def setLimits():
-#     await client.setLimit('maxFileSize', 104857600) # Sets the maximum file size to 1GB
-#     await client.setLimit('maxMediaSize', 16777216) # Sets the maximum Media size to 70MB
-
-# asyncio.run(setLimits())
-
 executor = threading.Thread(target=exeQueue.jobProcessor).start()
 
 print("Initialised the client successfully!")
