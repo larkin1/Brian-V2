@@ -184,27 +184,26 @@ def dls(data: dict, client):
 
         requests = request.splitlines()
         
-        print("1")
         gen = multiSongDl(requests)
 
-        print("2")
         songNames = next(gen)
         
-        print("3")
         errors = next(gen)
         
-        print("4")
         songstr = "*Now downloading:*"
         songNamesList = [
             f"\n{idx+1}. {song['title']} - {song['artName']}"
             for idx, song in enumerate(songNames)
         ]
+        print("1")
         songstr += "".join(songNamesList)
 
+        print("1.5")
         errs = [
             f"\n{idx+1}. {err}"
             for idx, err in enumerate(errors)
         ]
+        print("2")
         if errors:
             songstr += "\n\n*The following requests errored:*" + "".join(errs) + "\n\n_Please check spelling or broaden search terms and try again for the errored items._"
 
