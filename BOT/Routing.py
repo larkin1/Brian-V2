@@ -11,13 +11,13 @@ def route_command(text: str, chat: str, skip_whitelist_check: bool, *args, **kwa
 
     if skip_whitelist_check:
         for i in adminCommands: # Iterate through the commands dictionary and run the command if it matches any of the keys
-            if text.startswith(f"!{i}"):
+            if text.lower().startswith(f"!{i}"):
                 exeQueue.addItem(adminCommands[i][0], *args, **kwargs)
                 return
 
     elif chat in whitelist:
         for i in userCommands: # Iterate through the commands dictionary and run the command if it matches any of the keys
-            if text.startswith(f"!{i}"):
+            if text.lower().startswith(f"!{i}"):
                 exeQueue.addItem(userCommands[i][0], *args, **kwargs)
                 return
 
