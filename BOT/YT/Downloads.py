@@ -214,8 +214,9 @@ def dls(data: dict, client):
         print(2)
         
         try:
-            # client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], 'filename':"Songs.zip"}, timeout=60*20)
-            client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], 'filename':"Songs.zip"}, timeout=60*20)
+            # client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], 'filename':"Songs.zip"}, "", timeout=60*20)
+            client.sendFile(data["chatId"], path, {}, "", timeout=60*20)
+
         except Exception as error:
             print(error)
             
