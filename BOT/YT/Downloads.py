@@ -208,11 +208,17 @@ def dls(data: dict, client):
 
         client.sendText(data['chatId'], songstr, {"quotedMsg":data['messageId']})
 
+        print(1)
         path = next(gen)
         
-        # client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], 'filename':"Songs.zip"}, timeout=60*20)
-        client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], 'filename':"Songs.zip"}, f"{path}", timeout=60*20)
+        print(2)
         
+        try:
+            # client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], 'filename':"Songs.zip"}, timeout=60*20)
+            client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], 'filename':"Songs.zip"}, timeout=60*20)
+        except Exception as error:
+            print(error)
+            
         print("Done")
         
         
