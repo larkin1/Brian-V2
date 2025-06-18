@@ -191,32 +191,29 @@ def dls(data: dict, client):
         errors = next(gen)
         
         songstr = "*Now downloading:*"
-        songNamesList = [
-            f"\n{idx+1}. {song['title']} - {song['artName']}"
-            for idx, song in enumerate(songNames)
-        ]
-        print("1")
+        try:
+            
+            songNamesList = [
+                f"\n{idx+1}. {song['title']} - {song['artName']}"
+                for idx, song in enumerate(songNames)
+            ]
+        except Exception as error:
+            print(error)
+            print(songNames)
         songstr += "".join(songNamesList)
 
-        print("1.5")
         errs = [
             f"\n{idx+1}. {err}"
             for idx, err in enumerate(errors)
         ]
-        print("2")
         if errors:
             songstr += "\n\n*The following requests errored:*" + "".join(errs) + "\n\n_Please check spelling or broaden search terms and try again for the errored items._"
 
-        print("5")
         client.sendText(data['chatId'], songstr, {"quotedMsg":data['messageId']})
 
-        print("6")
         path = next(gen)
-
-        print("eeee")
         
         # client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], 'filename':"Songs.zip"}, timeout=60*20)
-        print("7")
         client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], 'filename':"Songs.zip"}, f"{path}", timeout=60*20)
         
         print("Done")
