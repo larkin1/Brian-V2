@@ -94,6 +94,7 @@ def downloadSongs(songList: list, outputDir: str="TEMP/YTMusicDownloads", maxWor
             'format': 'bestaudio/best',
             'outtmpl': filepath,
             'writethumbnail': True,
+            "cookiefile": "BOT/YT/ytdlp-cookies.txt",
             'postprocessors': [
                 {
                     'key': 'FFmpegExtractAudio',
