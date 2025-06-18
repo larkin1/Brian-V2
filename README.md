@@ -10,6 +10,10 @@ Not much at the moment, currently brian is just a shell waiting to be filled wit
 ## Where is Brian v1?
 In the deepest, darkest depths of my dusty old computer, never to be seen by anyone but myself 😉
 
+## Installing
+Download it and install the requirements.<br>
+Note: you will need ffmpeg.
+
 ## To-do:
 ### Features:
  - Song Downloader

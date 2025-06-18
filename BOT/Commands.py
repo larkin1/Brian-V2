@@ -9,7 +9,7 @@ userCommands = {
         ["Aight bro, why did you even do this one?"],
         "Helper Command"),
 
-    "ds": (Downloads.dls, 
+    "dls": (Downloads.dls, 
         ["NOT CURRENTLY IMPLEMENTED",],
         "Download a song."),
 

@@ -2,4 +2,3 @@ WPP_Whatsapp
 gradio_client
 yt-dlp
 ytmusicapi
-# git+https://github.com/glyh/qrterm
