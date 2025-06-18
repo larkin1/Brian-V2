@@ -50,8 +50,6 @@ client.sendText(MyNumber, "Brian (v2) started successfully!")
 
 # Add Listen To New Message
 
-client.sendFile()
-
 creator.client.onAnyMessage(handle_new_message)
 
 globals.main_loop = creator.loop
