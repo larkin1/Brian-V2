@@ -15,15 +15,14 @@ def zipFolder(path, maxSize=None, savePath="", name="Zipped"):
     :param savePath: Optional: Provide the path to save the file to. If none is specified, default to the location of the python script.
     :param name: Optional: Provide the name for the zip file. If none is specified, default to "Zipped"
     """
-    zipnum = 0
     if type(path) == str:
         filesInDir = os.listdir(path)
     else:
         filesInDir = path
     currentSize = 0
+    zipnum=0
     fileListList = []
     fileList = []
-    pathss = []
 
     for file in filesInDir:
         if (currentSize + os.path.getsize(file)) > maxSize:
@@ -171,9 +170,11 @@ def multiSongDl(songs: list):
     yield data
     yield results[1]
     
-    paths = downloadSongs(results[0])
-    
-    zip = zipFolder(paths, 10**8, "TEMP/YTMusicZips", str(requestId))
+    try:
+        paths = downloadSongs(results[0])
+        zip = zipFolder(paths, 10**8, "TEMP/YTMusicZips", str(requestId))
+    except Exception as error:
+        print(error)
     
     yield zip
 
@@ -215,7 +216,8 @@ def dls(data: dict, client):
         
         try:
             # client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], 'filename':"Songs.zip"}, "", timeout=60*20)
-            client.sendFile(data["chatId"], path, {}, "", timeout=60*20)
+            print(path, data['chatId'])
+            client.sendFile(data["chatId"], path, {}, "ere", timeout=60*20)
 
         except Exception as error:
             print(error)

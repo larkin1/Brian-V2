@@ -53,5 +53,6 @@ client.sendText(MyNumber, "Brian (v2) started successfully!")
 creator.client.onAnyMessage(handle_new_message)
 
 globals.main_loop = creator.loop
+globals.client = client
 
 creator.loop.run_forever()
