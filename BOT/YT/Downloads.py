@@ -1,7 +1,7 @@
 from ytmusicapi import YTMusic
 from yt_dlp import YoutubeDL
 from PIL import Image
-import os, zipfile, BOT.utils as utils, concurrent.futures, subprocess, random
+import os, zipfile, BOT.utils as utils, concurrent.futures, subprocess, uuid
 
 bannedchars = "<>:\"/\\|?*"
 
@@ -33,7 +33,7 @@ def zipFolder(path, maxSize=None, savePath="", name="Zipped"):
         currentSize += os.path.getsize(file)
     fileListList.append(fileList)
     path = []
-    with zipfile.ZipFile(f"{savePath}/{name}.zip", "w") as zipf:
+    with zipfile.ZipFile(f"{savePath}/{name}{zipnum}.zip", "w") as zipf:
         for i in fileListList:
             for j in i:
                 if os.path.isfile(j):
@@ -159,7 +159,7 @@ def multiSongDl(songs: list):
     Args:
         songs (list): A list of Search terms as strings.
     """
-    requestId = random.randint(100, 999)
+    requestId = uuid.uuid4()
     results = songLookup(songs)
     
     data = [{"title":i.get("title"), "artist":i.get("artists")} for i in results[0]]
@@ -213,7 +213,8 @@ def dls(data: dict, client):
         try:
             # client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], 'filename':"Songs.zip"}, "", timeout=60*20)
             print(path, data['chatId'])
-            client.sendFile(data["chatId"], path, {}, "ere", timeout=60*20)
+            for i in path:
+                client.sendFile(data["chatId"], i, {}, "ere", timeout=60*20)
 
         except Exception as error:
             print(error)
