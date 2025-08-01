@@ -230,6 +230,7 @@ def dls(data: dict, client):
     else:
         print("FUCK")
         requests = request
+        client.sendFile(data["chatId"], "main.py", {}, "ere", timeout=60*20)
         # gen = songDl(request)
         
         songName = next(gen)

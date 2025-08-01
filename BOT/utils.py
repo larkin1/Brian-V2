@@ -34,6 +34,7 @@ def printMessage(message, user, username):
             if message[0] == "!":
                 print(f"{Colors.White}{(f"{Colors.Red}[Command] {Colors.White}" + username + ':')} {Colors.Blue}{message}{Colors.White}")
             elif message.startswith("/9j/"):
+                print(f"{Colors.White}{(f"{Colors.Red}[Image] {Colors.White}" + username + ':')}{Colors.White}")
                 for i in base64_image_to_console_lines(message):
                     print(i)
             else:
@@ -42,6 +43,7 @@ def printMessage(message, user, username):
             if message[0] == "!":
                 print(f"{Colors.White}{(f"{Colors.Red}[Command] {Colors.Cyan}[User] {Colors.White}" + username + ':')} {Colors.Blue}{message}{Colors.White}")
             elif message.startswith("/9j/"):
+                print(f"{Colors.White}{(f"{Colors.Red}[Image] {Colors.White}" + username + ':')}{Colors.White}")
                 for i in base64_image_to_console_lines(message):
                     print(i)
             else:
@@ -137,7 +139,7 @@ def newGetMessageData(msg):
     
     return data
 
-def base64_image_to_console_lines(b64str, max_width=100):
+def base64_image_to_console_lines(b64str, max_width=200):
     # Decode Base64 to bytes
     img_bytes = base64.b64decode(b64str)
     img = Image.open(BytesIO(img_bytes)).convert("RGB")
