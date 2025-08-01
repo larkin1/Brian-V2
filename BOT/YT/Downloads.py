@@ -1,7 +1,7 @@
 from ytmusicapi import YTMusic
 from yt_dlp import YoutubeDL
 from PIL import Image
-import os, zipfile, BOT.utils as utils, concurrent.futures, subprocess, uuid
+import os, zipfile, BOT.utils as utils, concurrent.futures, subprocess, random
 
 bannedchars = "<>:\"/\\|?*"
 
@@ -33,7 +33,7 @@ def zipFolder(path, maxSize=None, savePath="", name="Zipped"):
         currentSize += os.path.getsize(file)
     fileListList.append(fileList)
     path = []
-    with zipfile.ZipFile(f"{savePath}/{name}.zip", "w", compression=zipfile.ZIP_DEFLATED) as zipf:
+    with zipfile.ZipFile(f"{savePath}/{name}.zip", "w") as zipf:
         for i in fileListList:
             for j in i:
                 if os.path.isfile(j):
@@ -159,7 +159,7 @@ def multiSongDl(songs: list):
     Args:
         songs (list): A list of Search terms as strings.
     """
-    requestId = uuid.uuid4()
+    requestId = random.randint(100, 999)
     results = songLookup(songs)
     
     data = [{"title":i.get("title"), "artist":i.get("artists")} for i in results[0]]
