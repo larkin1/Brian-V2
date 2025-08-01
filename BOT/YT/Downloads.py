@@ -124,7 +124,7 @@ def downloadSongs(songList: list, outputDir: str="TEMP/YTMusicDownloads", maxWor
                     jpg_path = thumbnail_path.rsplit(".", 1)[0] + ".jpg"
                     img_cropped.save(jpg_path, format='WEBP')
                 except Exception as e:
-                    print(f"Error cropping thumbnail: {e}")
+                    print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}DownloadError: {utils.Colors.Blue}Error cropping thumbnail: {e}{utils.Colors.White}")
 
                 # Embed cropped thumbnail using ffmpeg
                 try:
@@ -144,7 +144,7 @@ def downloadSongs(songList: list, outputDir: str="TEMP/YTMusicDownloads", maxWor
                     os.remove(thumbnail_path)
                     os.remove(jpg_path)
                 except Exception as e:
-                    print(f"Error embedding thumbnail: {e}")
+                    print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}DownloadError: {utils.Colors.Blue}Error embedding thumbnail: {e}{utils.Colors.White}")
                             
         return audio_path
 
@@ -167,13 +167,33 @@ def multiSongDl(songs: list):
     yield results[1]
     
     try:
-        paths = downloadSongs(results[0])
+        paths = downloadSongs(list(set(results[0])))
         zip = zipFolder(paths, 10**8, "TEMP/YTMusicZips", str(requestId))
     except Exception as error:
-        print(error)
+        print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}DownloadError: {utils.Colors.Blue}Error Downloading/Zipping Songs: {error}{utils.Colors.White}")
     
     yield zip
 
+def singleSongDl(song: str):
+    """Downloads a Song from a search term to a dir, and returns the path.
+    
+    Args:
+        song (str): A Search term as a string."""
+
+    results = songLookup([song])
+    
+    data = {"title":results[0][0].get("title"), "artist":results[0][0].get("artists")}
+    
+    yield data
+    yield results[1][0]
+    
+    try:
+        path = downloadSongs([results[0][0]])[0]
+    except Exception as error:
+        print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}DownloadError: {utils.Colors.Blue}Error Downloading Song: {error}{utils.Colors.White}")
+    
+    yield path
+    
 def dls(data: dict, client):
     request = str(data['text'].lower()).removeprefix('!dls').strip()
     requestIsMulti = len(request.splitlines()) > 1
@@ -205,33 +225,38 @@ def dls(data: dict, client):
 
         client.sendText(data['chatId'], songstr, {"quotedMsg":data['messageId']})
 
-        print(1)
         path = next(gen)
-        
-        print(2)
-        
+                
         try:
-            # client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], 'filename':"Songs.zip"}, "", timeout=60*20)
-            print(path, data['chatId'])
             for i in path:
                 client.sendFile(data["chatId"], i, {}, "ere", timeout=60*20)
-
         except Exception as error:
-            print(error)
-            
-        print("Done")
+            print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}SendError: {utils.Colors.Blue}Error Sending File: {error}{utils.Colors.White}")
         
-        
-        
-    
     else:
-        print("FUCK")
-        requests = request
-        client.sendFile(data["chatId"], "main.py", {}, "ere", timeout=60*20)
-        # gen = songDl(request)
+        
+        gen = singleSongDl(request)
         
         songName = next(gen)
+        
+        error = next(gen)
+        
+        if error:
+            client.sendText(data['chatId'], f"*Error Occurred:* Please check spelling or broaden search terms and try again.", {"quotedMsg":data['messageId']})
+            client.sendText(data['chatId'], f"*Error Details:* `{error}`", {"quotedMsg":data['messageId']})
+            return
 
+        songStr = f"*Now downloading:* {songName['title']} - {songName['artist']}"
+
+        client.sendText(data['chatId'], songStr, {"quotedMsg":data['messageId']})
+        
+        path = next(gen)
+        try:
+            client.sendFile(data["chatId"], path, {}, "ere", timeout=60*20)
+        except Exception as error:
+            print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}SendError: {utils.Colors.Blue}Error Sending File: {error}{utils.Colors.White}")
+            
+        
 
 
 
