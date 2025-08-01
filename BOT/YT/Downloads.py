@@ -241,8 +241,11 @@ def dls(data: dict, client):
         path = next(gen)
                 
         try:
-            for i in path:
-                client.sendFile(data["chatId"], i, {}, "ere", timeout=60*20)
+            if len(path) == 1:
+                client.sendFile(data["chatId"], path[0], {"quotedMsg":data['messageId']}, "SongZip", timeout=60*20)
+            else:
+                for i in path:
+                    client.sendFile(data["chatId"], i, {"quotedMsg":data['messageId'], "caption":f"Zip {path.index(i)+1} of {len(path)}"}, "SongZip", timeout=60*20)
         except Exception as error:
             print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}SendError: {utils.Colors.Blue}Error Sending File: {error}{utils.Colors.White}")
         
@@ -256,9 +259,9 @@ def dls(data: dict, client):
             client.sendText(data['chatId'], f"*Error Details:* `{error[0]}`", {"quotedMsg":data['messageId']})
             return
         songStr = f"*Now downloading:* {songName['title']} - {songName['artist']}"
-        client.sendText(data['chatId'], songStr, {"quotedMsg":data['messageId'], "type": "audio", "caption": songName["title"]})
+        client.sendText(data['chatId'], songStr, {"quotedMsg":data['messageId']})
         path = next(gen)
         try:
-            client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId']}, "ere", timeout=60*20)
+            client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId']}, "songFile", timeout=60*20)
         except Exception as error:
             print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}SendError: {utils.Colors.Blue}Error Sending File: {error}{utils.Colors.White}")
