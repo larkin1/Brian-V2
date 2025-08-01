@@ -247,10 +247,12 @@ def dls(data: dict, client):
         
     else:
         
+        print(1)
+        
         gen = singleSongDl(request)
-        
+        print(2)
         songName = next(gen)
-        
+        print(3)
         error = next(gen)
         
         if error:
@@ -259,9 +261,9 @@ def dls(data: dict, client):
             return
 
         songStr = f"*Now downloading:* {songName['title']} - {songName['artist']}"
-
+        print(4)
         client.sendText(data['chatId'], songStr, {"quotedMsg":data['messageId']})
-        
+        print(5)
         path = next(gen)
         try:
             client.sendFile(data["chatId"], path, {}, "ere", timeout=60*20)
