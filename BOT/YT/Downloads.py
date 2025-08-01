@@ -256,7 +256,7 @@ def dls(data: dict, client):
             client.sendText(data['chatId'], f"*Error Details:* `{error[0]}`", {"quotedMsg":data['messageId']})
             return
         songStr = f"*Now downloading:* {songName['title']} - {songName['artist']}"
-        client.sendText(data['chatId'], songStr, {"quotedMsg":data['messageId']})
+        client.sendText(data['chatId'], songStr, {"quotedMsg":data['messageId'], "type": "audio", "caption": songName["title"]})
         path = next(gen)
         try:
             client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId']}, "ere", timeout=60*20)
