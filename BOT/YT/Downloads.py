@@ -197,6 +197,9 @@ def singleSongDl(song: str):
     data = {"title":results[0][0].get("title"), "artist":results[0][0].get("artists")}
     
     yield data
+    
+    print(results)
+    
     yield results[1][0]
     
     try:
