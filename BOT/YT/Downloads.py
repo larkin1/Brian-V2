@@ -259,6 +259,6 @@ def dls(data: dict, client):
         client.sendText(data['chatId'], songStr, {"quotedMsg":data['messageId']})
         path = next(gen)
         try:
-            client.sendFile(data["chatId"], path, {}, "ere", timeout=60*20)
+            client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId']}, "ere", timeout=60*20)
         except Exception as error:
             print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}SendError: {utils.Colors.Blue}Error Sending File: {error}{utils.Colors.White}")
