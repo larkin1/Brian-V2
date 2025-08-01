@@ -33,18 +33,14 @@ def zipFolder(path, maxSize=None, savePath="", name="Zipped"):
         currentSize += os.path.getsize(file)
     fileListList.append(fileList)
     path = []
-    for i in fileListList:
-        zipnum += 1
-        if not os.path.exists(f"{savePath}"):
-            os.mkdir(f"{savePath}")
-        with zipfile.ZipFile(f"{savePath}/{name}{zipnum}.zip", "a", compression=zipfile.ZIP_DEFLATED) as zipf:
+    with zipfile.ZipFile(f"{savePath}/{name}.zip", "w", compression=zipfile.ZIP_DEFLATED) as zipf:
+        for i in fileListList:
             for j in i:
                 if os.path.isfile(j):
-                    arcname = j[j.rfind("/")+1:]
+                    arcname = os.path.basename(j)
                     zipf.write(j, arcname)
                     os.remove(j)
                 else:
-                    pass
                     print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}ZipError: {utils.Colors.Blue}Path: {j} does not exist. skipping...{utils.Colors.White}")
         path.append(f"{savePath}/{name}{zipnum}.zip")
     return path
