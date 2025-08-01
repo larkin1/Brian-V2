@@ -159,6 +159,16 @@ def multiSongDl(songs: list):
     Args:
         songs (list): A list of Search terms as strings.
     """
+    def dedup_dicts(seq, key):
+        seen = set()
+        out = []
+        for d in seq:
+            k = d[key]
+            if k not in seen:
+                seen.add(k)
+                out.append(d)
+        return out
+    
     requestId = uuid.uuid4()
     results = songLookup(songs)
     
@@ -166,8 +176,10 @@ def multiSongDl(songs: list):
     yield data
     yield results[1]
     
+    songs = dedup_dicts(results[0], "id")
+    
     try:
-        paths = downloadSongs(list(set(results[0])))
+        paths = downloadSongs(songs)
         zip = zipFolder(paths, 10**8, "TEMP/YTMusicZips", str(requestId))
     except Exception as error:
         print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}DownloadError: {utils.Colors.Blue}Error Downloading/Zipping Songs: {error}{utils.Colors.White}")
@@ -255,13 +267,3 @@ def dls(data: dict, client):
             client.sendFile(data["chatId"], path, {}, "ere", timeout=60*20)
         except Exception as error:
             print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}SendError: {utils.Colors.Blue}Error Sending File: {error}{utils.Colors.White}")
-            
-        
-
-
-
-
-
-
-
-
