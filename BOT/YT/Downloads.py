@@ -246,14 +246,11 @@ def dls(data: dict, client):
             print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}SendError: {utils.Colors.Blue}Error Sending File: {error}{utils.Colors.White}")
         
     else:
-        
-        print(1)
-        
         gen = singleSongDl(request)
-        print(2)
         songName = next(gen)
-        print(3)
         error = next(gen)
+        
+        print(error)
         
         if error:
             client.sendText(data['chatId'], f"*Error Occurred:* Please check spelling or broaden search terms and try again.", {"quotedMsg":data['messageId']})
