@@ -197,10 +197,8 @@ def singleSongDl(song: str):
     data = {"title":results[0][0].get("title"), "artist":results[0][0].get("artists")}
     
     yield data
-    
-    print(results)
-    
-    yield results[1][0]
+        
+    yield results[1]
     
     try:
         path = downloadSongs([results[0][0]])[0]
@@ -252,18 +250,13 @@ def dls(data: dict, client):
         gen = singleSongDl(request)
         songName = next(gen)
         error = next(gen)
-        
-        print(error)
-        
+
         if error:
             client.sendText(data['chatId'], f"*Error Occurred:* Please check spelling or broaden search terms and try again.", {"quotedMsg":data['messageId']})
-            client.sendText(data['chatId'], f"*Error Details:* `{error}`", {"quotedMsg":data['messageId']})
+            client.sendText(data['chatId'], f"*Error Details:* `{error[0]}`", {"quotedMsg":data['messageId']})
             return
-
         songStr = f"*Now downloading:* {songName['title']} - {songName['artist']}"
-        print(4)
         client.sendText(data['chatId'], songStr, {"quotedMsg":data['messageId']})
-        print(5)
         path = next(gen)
         try:
             client.sendFile(data["chatId"], path, {}, "ere", timeout=60*20)
