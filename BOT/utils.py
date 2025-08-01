@@ -1,3 +1,7 @@
+import base64
+from io import BytesIO
+from PIL import Image
+
 # Utilities for the bot.
 
 class Colors:
@@ -29,11 +33,17 @@ def printMessage(message, user, username):
         if user not in whitelist:
             if message[0] == "!":
                 print(f"{Colors.White}{(f"{Colors.Red}[Command] {Colors.White}" + username + ':')} {Colors.Blue}{message}{Colors.White}")
+            elif message.startswith("/9j/"):
+                for i in base64_image_to_console_lines(message):
+                    print(i)
             else:
                 print(f"{Colors.White}{(f"{Colors.Yellow}[Message] {Colors.White}" + username + ':')} {Colors.Blue}{message}{Colors.White}")
         else:
             if message[0] == "!":
                 print(f"{Colors.White}{(f"{Colors.Red}[Command] {Colors.Cyan}[User] {Colors.White}" + username + ':')} {Colors.Blue}{message}{Colors.White}")
+            elif message.startswith("/9j/"):
+                for i in base64_image_to_console_lines(message):
+                    print(i)
             else:
                 print(f"{Colors.White}{(f"{Colors.Yellow}[Message] {Colors.Cyan}[User] {Colors.White}" + username + ':')} {Colors.Blue}{message}{Colors.White}")
 
@@ -126,3 +136,36 @@ def newGetMessageData(msg):
         data['quotedChatId'] = quotedChatId
     
     return data
+
+def base64_image_to_console_lines(b64str, max_width=100):
+    # Decode Base64 to bytes
+    img_bytes = base64.b64decode(b64str)
+    img = Image.open(BytesIO(img_bytes)).convert("RGB")
+    w, h = img.size
+
+    # Only shrink if necessary
+    if w > max_width:
+        aspect_ratio = h / w
+        new_width = max_width
+        new_height = int(aspect_ratio * new_width * 0.5) * 2  # Even for half-blocks
+        img = img.resize((new_width, new_height))
+    else:
+        # Make height even for half-block usage
+        if h % 2 == 1:
+            img = img.crop((0, 0, w, h-1))
+        new_width, new_height = img.size
+
+    lines = []
+    for y in range(0, img.height, 2):
+        line = ""
+        for x in range(img.width):
+            top = img.getpixel((x, y))
+            if y+1 < img.height:
+                bottom = img.getpixel((x, y+1))
+            else:
+                bottom = (0,0,0)
+            # Foreground = top pixel, Background = bottom pixel
+            line += f"\033[38;2;{top[0]};{top[1]};{top[2]}m\033[48;2;{bottom[0]};{bottom[1]};{bottom[2]}m▀"
+        line += "\033[0m"
+        lines.append(line)
+    return lines
