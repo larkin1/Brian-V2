@@ -6,44 +6,40 @@ import os, zipfile, BOT.utils as utils, concurrent.futures, subprocess, uuid, re
 bannedchars = "<>:\"/\\|?*"
 
 def zipFolder(path, maxSize=None, savePath="", name="Zipped"):
-    """ 
-    Returns A Number of zip file paths in a list
-    if the size of the files in a folder is greater than maxSize, multiple Zip files are created.
-    zip file paths are always returned in a list for consistency
-    :param path: Required: provide the path to the folder of files to zip
-    :param MaxSize: Optional: provide the maximum zip size in bytes, if None is specified, all files will be zipped in one file.
-    :param savePath: Optional: Provide the path to save the file to. If none is specified, default to the location of the python script.
-    :param name: Optional: Provide the name for the zip file. If none is specified, default to "Zipped"
-    """
     if type(path) == str:
-        filesInDir = os.listdir(path)
+        filesInDir = [os.path.join(path, f) for f in os.listdir(path)]
     else:
         filesInDir = path
     currentSize = 0
-    zipnum=0
+    zipnum = 1
     fileListList = []
     fileList = []
 
     for file in filesInDir:
-        if (currentSize + os.path.getsize(file)) > maxSize:
+        size = os.path.getsize(file)
+        if maxSize and (currentSize + size > maxSize) and fileList:
             fileListList.append(fileList)
             fileList = []
             currentSize = 0
         fileList.append(file)
-        currentSize += os.path.getsize(file)
-    fileListList.append(fileList)
-    path = []
-    with zipfile.ZipFile(f"{savePath}/{name}{zipnum}.zip", "w") as zipf:
-        for i in fileListList:
-            for j in i:
+        currentSize += size
+    if fileList:
+        fileListList.append(fileList)
+
+    paths = []
+    for idx, fileList in enumerate(fileListList):
+        zip_path = os.path.join(savePath, f"{name}{idx+1}.zip")
+        with zipfile.ZipFile(zip_path, "w") as zipf:
+            for j in fileList:
                 if os.path.isfile(j):
                     arcname = os.path.basename(j)
                     zipf.write(j, arcname)
-                    os.remove(j)
+                    # os.remove(j)  # Uncomment if you want to delete files after zipping
                 else:
-                    print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}ZipError: {utils.Colors.Blue}Path: {j} does not exist. skipping...{utils.Colors.White}")
-        path.append(f"{savePath}/{name}{zipnum}.zip")
-    return path
+                    print(f"[Error] Path: {j} does not exist. Skipping...")
+        paths.append(zip_path)
+    return paths
+
 
 music = YTMusic('BOT/YT/YtMusicAuth.json')
 

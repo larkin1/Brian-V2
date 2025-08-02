@@ -32,22 +32,22 @@ def printMessage(message, user, username):
         whitelist = open("BOT/Whitelist.txt", "r").read().splitlines()
         if user not in whitelist:
             if message[0] == "!":
-                print(f"{Colors.White}{(f"{Colors.Red}[Command] {Colors.White}" + username + ':')} {Colors.Blue}{message}{Colors.White}")
+                print(f"{Colors.White}{(f"{Colors.Red}[Command] {Colors.White}" + str(username) + ':')} {Colors.Blue}{message}{Colors.White}")
             elif message.startswith("/9j/"):
-                print(f"{Colors.White}{(f"{Colors.Red}[Image] {Colors.White}" + username + ':')}{Colors.White}")
+                print(f"{Colors.White}{(f"{Colors.Red}[Image] {Colors.White}" + str(username) + ':')}{Colors.White}")
                 for i in base64_image_to_console_lines(message):
                     print(i)
             else:
-                print(f"{Colors.White}{(f"{Colors.Yellow}[Message] {Colors.White}" + username + ':')} {Colors.Blue}{message}{Colors.White}")
+                print(f"{Colors.White}{(f"{Colors.Yellow}[Message] {Colors.White}" + str(username) + ':')} {Colors.Blue}{message}{Colors.White}")
         else:
             if message[0] == "!":
-                print(f"{Colors.White}{(f"{Colors.Red}[Command] {Colors.Cyan}[User] {Colors.White}" + username + ':')} {Colors.Blue}{message}{Colors.White}")
+                print(f"{Colors.White}{(f"{Colors.Red}[Command] {Colors.Cyan}[User] {Colors.White}" + str(username) + ':')} {Colors.Blue}{message}{Colors.White}")
             elif message.startswith("/9j/"):
-                print(f"{Colors.White}{(f"{Colors.Red}[Image] {Colors.White}" + username + ':')}{Colors.White}")
+                print(f"{Colors.White}{(f"{Colors.Red}[Image] {Colors.White}" + str(username) + ':')}{Colors.White}")
                 for i in base64_image_to_console_lines(message):
                     print(i)
             else:
-                print(f"{Colors.White}{(f"{Colors.Yellow}[Message] {Colors.Cyan}[User] {Colors.White}" + username + ':')} {Colors.Blue}{message}{Colors.White}")
+                print(f"{Colors.White}{(f"{Colors.Yellow}[Message] {Colors.Cyan}[User] {Colors.White}" + str(username) + ':')} {Colors.Blue}{message}{Colors.White}")
 
 def getMessageData(msg):
     """Fetches and returns the message data from the received message."""
