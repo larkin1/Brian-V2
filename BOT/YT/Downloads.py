@@ -79,8 +79,8 @@ def downloadSongs(songList: list, outputDir: str="TEMP/YTMusicDownloads", maxWor
             s = re.sub(r'[<>:"/\\|?*\']', '', s)  # remove bad chars
             return s[:maxlen]
 
-        title = safe_filename(song['title'], 40)
-        artists = safe_filename(song['artists'], 30)
+        title = safe_filename(song['title'], 100)
+        artists = safe_filename(song['artists'], 40)
         filename = f"{title} - {artists}.%(ext)s"
         filepath = os.path.join(outputDir, filename)
 
