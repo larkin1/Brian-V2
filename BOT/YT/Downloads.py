@@ -4,8 +4,11 @@ from PIL import Image
 import os, zipfile, BOT.utils as utils, concurrent.futures, subprocess, uuid, re
 
 bannedchars = "<>:\"/\\|?*"
-
 def zipFolder(path, maxSize=None, savePath="", name="Zipped"):
+    
+    if savePath and not os.path.exists(savePath):
+        os.makedirs(savePath)
+    
     if type(path) == str:
         filesInDir = [os.path.join(path, f) for f in os.listdir(path)]
     else:
@@ -40,7 +43,6 @@ def zipFolder(path, maxSize=None, savePath="", name="Zipped"):
         paths.append(zip_path)
     return paths
 
-
 music = YTMusic('BOT/YT/YtMusicAuth.json')
 
 def songLookup(songs: list) -> tuple:
@@ -50,7 +52,7 @@ def songLookup(songs: list) -> tuple:
     
     def search(item):
         try:
-            return music.search(item, filter='songs')
+            return music.search(item, filter='songs', limit=1)
         except Exception as e:
             errors.append((item, str(e)))
             return None
@@ -208,8 +210,78 @@ def singleSongDl(song: str):
         print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}DownloadError: {utils.Colors.Blue}Error Downloading Song: {error}{utils.Colors.White}")
     
     yield path
+
+def albumLookup(album: str) -> tuple:
+    """Uses the YT music search api to lookup songs and return a list. the first result in the tuple is the songs, and the second is the errors."""
+    results = []
+    errors = []
+    def search(item):
+        try:
+            return music.search(item, filter='albums', limit=1)
+        except Exception as e:
+            errors.append((item, str(e)))
+            return None
+    result = search(album)
+    item = result[0]
+    id = item["playlistId"]
+    link = f"https://music.youtube.com/playlist?list={id}"
+    title = item['title']
+    artist = item['artists'][0]['name']
+    
+    with YTMusic() as lookup:
+        id = lookup.get_album_browse_id(id)
+        file = lookup.get_album(id)
+        
+    results = file.get("tracks")    
+    listOfSongs = []
+    for i in results:
+        artist = ''
+        for j in i['artists']:
+            artist += j['name']+', '
+        artist = artist.strip(", ")
+        titlee = i["title"]
+        listOfSongs.append((artist, titlee))
+
+    searchTerms = [f'"{i[1]}" "{title}" "{i[0]}"' for i in listOfSongs]
+    
+    listOfSongs = songLookup(searchTerms)[0]
+    
+    songs = []
+    for i in listOfSongs:
+        songs.append({
+            "title": i.get("title", ""),
+            "id": i.get("id", ""),
+            "artists": i.get("artists", ""),
+            "songNumber": listOfSongs.index(i) + 1,
+        })
+                
+    return (songs, title, artist, errors)
+
+def albumDl(album: str):
+    """Downloads an Album from search terms to a zip, and returns the zip.
+
+    Args:
+        album (str): The name of the album to download.
+    """
+    
+    results = albumLookup(album)
+    
+    yield results[1], results[2], results[3]  # title, artist, errors
+
+    filename = re.sub(r'[<>:"/\\|?*\']', '', f"{results[1]} - {results[2]}")
+
+    try:
+        paths = downloadSongs(results[0])
+        zip = zipFolder(paths, 10**8, "TEMP/YTMusicZips", filename)
+        for i in paths:
+            os.remove(i)
+    except Exception as error:
+        #print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}DownloadError: {utils.Colors.Blue}Error Downloading/Zipping Songs: {error}{utils.Colors.White}")
+        pass
+    yield zip
     
 def dls(data: dict, client):
+    """Send A Song or Multiple songs based on a seach term."""
     request = str(data['text'].lower()).removeprefix('!dls').strip()
     requestIsMulti = len(request.splitlines()) > 1
     
@@ -269,3 +341,26 @@ def dls(data: dict, client):
             client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], "type":"document"}, "songFile", timeout=60*20)
         except Exception as error:
             print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}SingleSongSendError: {utils.Colors.Blue}Error Sending File: {error}{utils.Colors.White}")
+
+def dla(data: dict, client):
+    """Send an album based on a search term."""
+    
+    gen = albumDl(str(data['text'].lower()).removeprefix('!dla').strip())
+
+    title, artist, errors = next(gen)
+    
+    if errors:
+        client.sendText(data['chatId'], f"*Error Occurred:* Please check spelling or broaden search terms and try again.", {"quotedMsg":data['messageId']})
+        client.sendText(data['chatId'], f"*Error Details:* `{errors}`", {"quotedMsg":data['messageId']})
+        return
+    
+    songstr = f"*Now downloading:* {title} - {artist}"
+    
+    client.sendText(data['chatId'], songstr, {"quotedMsg":data['messageId']})
+    
+    path = next(gen)
+    
+    try:
+        client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], "type":"document"}, "albumFile", timeout=60*20)
+    except Exception as error:
+        print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}AlbumSendError: {utils.Colors.Blue}Error Sending File: {error}{utils.Colors.White}")
