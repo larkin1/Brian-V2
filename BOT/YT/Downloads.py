@@ -32,18 +32,19 @@ def zipFolder(path, maxSize=None, savePath="", name="Zipped"):
         fileList.append(file)
         currentSize += os.path.getsize(file)
     fileListList.append(fileList)
-    path = []
-    with zipfile.ZipFile(f"{savePath}/{name}{zipnum}.zip", "w") as zipf:
-        for i in fileListList:
-            for j in i:
+    paths = []
+    for zipnum, files in enumerate(fileListList):
+        zippath = f"{savePath}/{name}{zipnum}.zip"
+        with zipfile.ZipFile(zippath, "w") as zipf:
+            for j in files:
                 if os.path.isfile(j):
                     arcname = os.path.basename(j)
                     zipf.write(j, arcname)
                     os.remove(j)
                 else:
-                    print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}ZipError: {utils.Colors.Blue}Path: {j} does not exist. skipping...{utils.Colors.White}")
-        path.append(f"{savePath}/{name}{zipnum}.zip")
-    return path
+                    print(f"[Error] Path: {j} does not exist. skipping...")
+        paths.append(zippath)
+    return paths
 
 music = YTMusic('BOT/YT/YtMusicAuth.json')
 
