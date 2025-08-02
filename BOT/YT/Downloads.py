@@ -181,8 +181,11 @@ def multiSongDl(songs: list):
     songs = dedup_dicts(results[0], "id")
     
     try:
+        print(1)
         paths = downloadSongs(songs)
+        print(2)
         zip = zipFolder(paths, 10**8, "TEMP/YTMusicZips", str(requestId))
+        print(3)
     except Exception as error:
         print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}DownloadError: {utils.Colors.Blue}Error Downloading/Zipping Songs: {error}{utils.Colors.White}")
     
@@ -244,9 +247,11 @@ def dls(data: dict, client):
                 
         try:
             if len(path) == 1:
+                print("eee")
                 client.sendFile(data["chatId"], path[0], {"quotedMsg":data['messageId']}, "SongZip", timeout=60*20)
             else:
                 for i in path:
+                    print("efewr")
                     client.sendFile(data["chatId"], i, {"quotedMsg":data['messageId'], "caption":f"Zip {path.index(i)+1} of {len(path)}"}, "SongZip", timeout=60*20)
         except Exception as error:
             print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}SendError: {utils.Colors.Blue}Error Sending File: {error}{utils.Colors.White}")
