@@ -2,8 +2,8 @@ import BOT.utils as utils, BOT.Routing as Routing, BOT.DbMgmt as DbMgmt, datetim
 from WPP_Whatsapp import Create
 # brian\scripts\activate
 
-MyNumber = 'REDACTED@c.us'
-MyNumbers = ['REDACTED@c.us', 'REDACTED@lid']
+Admins = globals.Admins
+
 creator = Create(session="brianv2", browser='chrome', headless=True, catchQR=utils.catchQR, logQR=True, qr='terminal')
 client = creator.start()
 
@@ -33,7 +33,7 @@ def handle_new_message(msg):
 
         chat = data["chatId"]
 
-        skipCheck = str(data['authorId']) in MyNumbers # If it's the admin, skip the whitelist check.
+        skipCheck = str(data['authorId']) in Admins # If it's the admin, skip the whitelist check.
         
         # If the message is a suspected comand...
         if data["text"][0] == "!":
@@ -46,7 +46,7 @@ executor = threading.Thread(target=exeQueue.jobProcessor).start()
 
 print("Initialised the client successfully!")
 
-client.sendText(MyNumber, "Brian (v2) started successfully!")
+client.sendText(Admins[0], "Brian (v2) started successfully!")
 
 # Add Listen To New Message
 
