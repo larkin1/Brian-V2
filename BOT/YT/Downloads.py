@@ -1,7 +1,7 @@
 from ytmusicapi import YTMusic
 from yt_dlp import YoutubeDL
 from PIL import Image
-import os, zipfile, BOT.utils as utils, concurrent.futures, subprocess, uuid
+import os, zipfile, BOT.utils as utils, concurrent.futures, subprocess, uuid, re
 
 bannedchars = "<>:\"/\\|?*"
 
@@ -79,7 +79,13 @@ def downloadSongs(songList: list, outputDir: str="TEMP/YTMusicDownloads", maxWor
     
     def download(song):
         url = f"https://music.youtube.com/watch?v={song['id']}"
-        filename = f"{song['title']} - {song['artists']}.%(ext)s"
+        def safe_filename(s, maxlen=80):
+            s = re.sub(r'[<>:"/\\|?*\']', '', s)  # remove bad chars
+            return s[:maxlen]
+
+        title = safe_filename(song['title'], 40)
+        artists = safe_filename(song['artists'], 30)
+        filename = f"{title} - {artists}.%(ext)s"
         filepath = os.path.join(outputDir, filename)
 
         if any(os.path.exists(filepath.replace('%(ext)s', ext)) for ext in ['mp3', 'm4a', 'webm']):
