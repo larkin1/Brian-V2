@@ -72,6 +72,52 @@ def songLookup(songs: list) -> tuple:
         
     return (cookedResults, errors)
 
+def albumLookup(album: str) -> tuple:
+    """Uses the YT music search api to lookup songs and return a list. the first result in the tuple is the songs, and the second is the errors."""
+    results = []
+    errors = []
+    def search(item):
+        try:
+            return music.search(item, filter='albums', limit=1)
+        except Exception as e:
+            errors.append((item, str(e)))
+            return None
+    result = search(album)
+    item = result[0]
+    id = item["playlistId"]
+    link = f"https://music.youtube.com/playlist?list={id}"
+    title = item['title']
+    artist = item['artists'][0]['name']
+    
+    with YTMusic() as lookup:
+        id = lookup.get_album_browse_id(id)
+        file = lookup.get_album(id)
+        
+    results = file.get("tracks")    
+    listOfSongs = []
+    for i in results:
+        artist = ''
+        for j in i['artists']:
+            artist += j['name']+', '
+        artist = artist.strip(", ")
+        titlee = i["title"]
+        listOfSongs.append((artist, titlee))
+
+    searchTerms = [f'"{i[1]}" "{title}" "{i[0]}"' for i in listOfSongs]
+    
+    listOfSongs = songLookup(searchTerms)[0]
+    
+    songs = []
+    for i in listOfSongs:
+        songs.append({
+            "title": i.get("title", ""),
+            "id": i.get("id", ""),
+            "artists": i.get("artists", ""),
+            "songNumber": listOfSongs.index(i) + 1,
+        })
+                
+    return (songs, title, artist, errors)
+
 def downloadSongs(songList: list, outputDir: str="TEMP/YTMusicDownloads", maxWorkers: int=4):
     os.makedirs(outputDir, exist_ok=True)
     
@@ -185,6 +231,8 @@ def multiSongDl(songs: list):
     try:
         paths = downloadSongs(songs)
         zip = zipFolder(paths, 10**8, "TEMP/YTMusicZips", str(requestId))
+        for i in paths:
+            os.remove(i)
     except Exception as error:
         print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}DownloadError: {utils.Colors.Blue}Error Downloading/Zipping Songs: {error}{utils.Colors.White}")
     
@@ -210,52 +258,6 @@ def singleSongDl(song: str):
         print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}DownloadError: {utils.Colors.Blue}Error Downloading Song: {error}{utils.Colors.White}")
     
     yield path
-
-def albumLookup(album: str) -> tuple:
-    """Uses the YT music search api to lookup songs and return a list. the first result in the tuple is the songs, and the second is the errors."""
-    results = []
-    errors = []
-    def search(item):
-        try:
-            return music.search(item, filter='albums', limit=1)
-        except Exception as e:
-            errors.append((item, str(e)))
-            return None
-    result = search(album)
-    item = result[0]
-    id = item["playlistId"]
-    link = f"https://music.youtube.com/playlist?list={id}"
-    title = item['title']
-    artist = item['artists'][0]['name']
-    
-    with YTMusic() as lookup:
-        id = lookup.get_album_browse_id(id)
-        file = lookup.get_album(id)
-        
-    results = file.get("tracks")    
-    listOfSongs = []
-    for i in results:
-        artist = ''
-        for j in i['artists']:
-            artist += j['name']+', '
-        artist = artist.strip(", ")
-        titlee = i["title"]
-        listOfSongs.append((artist, titlee))
-
-    searchTerms = [f'"{i[1]}" "{title}" "{i[0]}"' for i in listOfSongs]
-    
-    listOfSongs = songLookup(searchTerms)[0]
-    
-    songs = []
-    for i in listOfSongs:
-        songs.append({
-            "title": i.get("title", ""),
-            "id": i.get("id", ""),
-            "artists": i.get("artists", ""),
-            "songNumber": listOfSongs.index(i) + 1,
-        })
-                
-    return (songs, title, artist, errors)
 
 def albumDl(album: str):
     """Downloads an Album from search terms to a zip, and returns the zip.
@@ -286,45 +288,35 @@ def dls(data: dict, client):
     requestIsMulti = len(request.splitlines()) > 1
     
     if requestIsMulti:
-
         requests = request.splitlines()
-        
         gen = multiSongDl(requests)
-
         songNames = next(gen)
-        
         errors = next(gen)
-        
         songstr = "*Now downloading:*"
         songNamesList = [
             f"\n{idx+1}. {song['title']} - {song['artist']}"
             for idx, song in enumerate(songNames)
         ]
-
         songstr += "".join(songNamesList)
-
         errs = [
             f"\n{idx+1}. {err}"
             for idx, err in enumerate(errors)
         ]
         if errors:
             songstr += "\n\n*The following requests errored:*" + "".join(errs) + "\n\n_Please check spelling or broaden search terms and try again for the errored items._"
-
         client.sendText(data['chatId'], songstr, {"quotedMsg":data['messageId']})
-
         path = next(gen)
-
         try:
             if len(path) == 1:
                 client.sendFile(data["chatId"], path[0], {"quotedMsg":data['messageId']}, "SongZip", timeout=60*20)
+                os.remove(path[0])
             else:
                 for i in path:
-                    #client.sendFile(data["chatId"], i, {"quotedMsg":data['messageId'], "caption":f"Zip {path.index(i)+1} of {len(path)}"}, "SongZip", timeout=60*20)
-                    client.sendFile(data["chatId"], i, {"quotedMsg":data['messageId']}, "SongZip", timeout=60*20)
-
+                    client.sendFile(data["chatId"], i, {"quotedMsg":data['messageId'], "caption":f"Zip {path.index(i)+1} of {len(path)}"}, "SongZip", timeout=60*20)
+                    # client.sendFile(data["chatId"], i, {"quotedMsg":data['messageId']}, "SongZip", timeout=60*20)
+                    os.remove(i)
         except Exception as error:
             print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}MultiSongSendError: {utils.Colors.Blue}Error Sending File: {error}{utils.Colors.White}")
-        
     else:
         gen = singleSongDl(request)
         songName = next(gen)
@@ -339,6 +331,7 @@ def dls(data: dict, client):
         path = next(gen)
         try:
             client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], "type":"document"}, "songFile", timeout=60*20)
+            os.remove(path)
         except Exception as error:
             print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}SingleSongSendError: {utils.Colors.Blue}Error Sending File: {error}{utils.Colors.White}")
 
@@ -357,10 +350,16 @@ def dla(data: dict, client):
     songstr = f"*Now downloading:* {title} - {artist}"
     
     client.sendText(data['chatId'], songstr, {"quotedMsg":data['messageId']})
-    
+
     path = next(gen)
-    
+
     try:
-        client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], "type":"document"}, "albumFile", timeout=60*20)
+        if len(path) == 1:
+            client.sendFile(data["chatId"], path[0], {"quotedMsg":data['messageId']}, "AlbumZip", timeout=60*20)
+            os.remove(path[0])
+        else:
+            for i in path:
+                client.sendFile(data["chatId"], i, {"quotedMsg":data['messageId']}, "AlbumZip", timeout=60*20)
+                os.remove(i)
     except Exception as error:
         print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}AlbumSendError: {utils.Colors.Blue}Error Sending File: {error}{utils.Colors.White}")

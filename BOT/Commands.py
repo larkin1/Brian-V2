@@ -1,7 +1,7 @@
 import BOT.YT.Downloads as Downloads, BOT.AI.musicgen as musicgen, BOT.help as help, BOT.adminCmds as adminCmds, BOT.testfuncts as testfuncts
 # This file contains the command mappings for the bot.
 # Each command is associated with a function that will be executed when the command is called.
-# For each command, the first element is the function to call, the second element is a list of help messages, and the thirs is a short descriptor string.
+# For each command, the first element is the function to call, the second element is a list of help messages, and the third is a short descriptor string.
 # Help messages are send individually one by one to the user when they request help for a specific command.
 
 userCommands = {
@@ -10,8 +10,12 @@ userCommands = {
         "Helper Command"),
 
     "dls": (Downloads.dls, 
-        ["NOT CURRENTLY IMPLEMENTED",],
+        ["Function to download songs. Uses Youtube search algorithms to find your song.", "To download a song, simply do ```!dls <song name>```\nFor multiple songs, simply add a line break for each new song."],
         "Download a song."),
+
+    "dla": (Downloads.dla, 
+        ["Function to download albums. Uses Youtube search algorithms to find your album.", "To download an album, simply do ```!dla <album name>```"],
+        "Download an album."),
 
     "musicgen": (musicgen.musicgen, 
         ["NOT CURRENTLY IMPLEMENTED",],
