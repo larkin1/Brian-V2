@@ -312,9 +312,11 @@ def dls(data: dict, client):
                 os.remove(path[0])
             else:
                 for i in path:
-                    client.sendFile(data["chatId"], i, {"quotedMsg":data['messageId'], "caption":f"Zip {path.index(i)+1} of {len(path)}"}, "SongZip", timeout=60*20)
-                    # client.sendFile(data["chatId"], i, {"quotedMsg":data['messageId']}, "SongZip", timeout=60*20)
-                    os.remove(i)
+                    # client.sendFile(data["chatId"], i, {"quotedMsg":data['messageId'], "caption":f"Zip {path.index(i)+1} of {len(path)}"}, "SongZip", timeout=60*20)
+                    client.sendFile(data["chatId"], i, {"quotedMsg":data['messageId']}, "SongZip", timeout=60*20)
+                for i in path:
+                        os.remove(i)
+                    
         except Exception as error:
             print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}MultiSongSendError: {utils.Colors.Blue}Error Sending File: {error}{utils.Colors.White}")
     else:
@@ -360,6 +362,7 @@ def dla(data: dict, client):
         else:
             for i in path:
                 client.sendFile(data["chatId"], i, {"quotedMsg":data['messageId']}, "AlbumZip", timeout=60*20)
+            for i in path:
                 os.remove(i)
     except Exception as error:
         print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}AlbumSendError: {utils.Colors.Blue}Error Sending File: {error}{utils.Colors.White}")
