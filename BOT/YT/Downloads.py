@@ -230,7 +230,7 @@ def multiSongDl(songs: list):
     
     try:
         paths = downloadSongs(songs)
-        zip = zipFolder(paths, 10**8, "TEMP/YTMusicZips", str(requestId))
+        zip = zipFolder(paths, 7**8, "TEMP/YTMusicZips", str(requestId))
         for i in paths:
             os.remove(i)
     except Exception as error:
