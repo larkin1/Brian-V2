@@ -307,13 +307,16 @@ def dls(data: dict, client):
         client.sendText(data['chatId'], songstr, {"quotedMsg":data['messageId']})
         path = next(gen)
         try:
+            print(path)
             if len(path) == 1:
                 client.sendFile(data["chatId"], path[0], {"quotedMsg":data['messageId']}, "SongZip", timeout=60*20)
                 os.remove(path[0])
             else:
                 for i in path:
+                    print(i)
                     # client.sendFile(data["chatId"], i, {"quotedMsg":data['messageId'], "caption":f"Zip {path.index(i)+1} of {len(path)}"}, "SongZip", timeout=60*20)
                     client.sendFile(data["chatId"], i, {"quotedMsg":data['messageId']}, "SongZip", timeout=60*20)
+                    print(i, "Done")
                 for i in path:
                         os.remove(i)
                     
