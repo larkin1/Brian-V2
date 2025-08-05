@@ -24,6 +24,10 @@ userCommands = {
     "lss": (Downloads.lss, 
         ["Function to search for songs. Uses Youtube search algorithms to find your song.", "To search for a song, simply do ```!lss <song name>```"],
         "Search for a song."),
+    
+    "lsa": (Downloads.lsa, 
+        ["Function to search for albums. Uses Youtube search algorithms to find your album.", "To search for an album, simply do ```!lsa <album name>```"],
+        "Search for an album."),
 }
 
 adminCommands = userCommands.copy()

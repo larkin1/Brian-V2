@@ -383,12 +383,31 @@ def lss(data, client):
     text = str(data['text'].lower()).removeprefix('!lss').strip()
     
     results = search(text)
-
-    print(results)
     
     itemsstr = "*Top Search Results:*\n\n"
 
     for idx, item in enumerate(results):
-        itemsstr += f"{idx+1}. {item['title']} - {item['artists']}\n"
+        itemsstr += f"{idx+1}. {item['title']} - {item['artists'][0]['name']}\n"
+
+    client.sendText(data['chatId'], itemsstr, {"quotedMsg":data['messageId']})
+
+def lsa(data, client):
+    """Send a list of the top search results from a search term."""
+    
+    def search(item):
+        try:
+            return music.search(item, filter='albums', limit=10)
+        except Exception as e:
+            errors.append((item, str(e)))
+            return None
+
+    text = str(data['text'].lower()).removeprefix('!lsa').strip()
+    
+    results = search(text)
+    
+    itemsstr = "*Top Search Results:*\n\n"
+
+    for idx, item in enumerate(results):
+        itemsstr += f"{idx+1}. {item['title']} - {item['artists'][0]['name']}\n"
 
     client.sendText(data['chatId'], itemsstr, {"quotedMsg":data['messageId']})
