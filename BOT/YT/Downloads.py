@@ -60,7 +60,10 @@ def songLookup(songs: list) -> tuple:
         results = list(executor.map(search, songs))
         
     cookedResults = []
+
+    print(results)
     for i in results:
+        print(i)
         item = i[0]
         artists = item.get("artists", [])
         arts = ", ".join(j.get("name", "") for j in artists)
@@ -375,7 +378,7 @@ def lss(data, client):
     
     def search(item):
         try:
-            return music.search(item, filter='songs', limit=10)
+            return music.search(item, filter='songs')
         except Exception as e:
             errors.append((item, str(e)))
             return None
@@ -396,7 +399,7 @@ def lsa(data, client):
     
     def search(item):
         try:
-            return music.search(item, filter='albums', limit=10)
+            return music.search(item, filter='albums')
         except Exception as e:
             errors.append((item, str(e)))
             return None
