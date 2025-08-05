@@ -34,4 +34,7 @@ adminCommands.update({
     "ban": (adminCmds.ban, 
         ["Bans a user or chat from using the bot."],
         "Admin Only Command"),
+    "adminTest": (testfuncts.adminTest, 
+        ["Admin Only Command"],
+        "Admin Only Command"),
 })
