@@ -35,7 +35,7 @@ def handle_state_change(state):
         log_and_notify_admin("WhatsApp client error. Exiting.")
         sys.exit(1)
 
-creator.onStateChange(handle_state_change)
+client.onStateChange(handle_state_change)
 
 if creator.state != 'CONNECTED':
     log_and_notify_admin(f"Initial state: {creator.state}")
