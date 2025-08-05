@@ -6,22 +6,26 @@ def whitelist(data, client):
     if Number:
         chat = Number
 
-    print(chat)
-
     whitelistData = open("RESOURCES/Whitelist.txt", "r")
+    print(1)
     whitelistClean = [i.strip().strip("\n") for i in whitelistData.readlines()]
+    print(2)
     whitelistData.close()
+    print(3)
     whitelist = open("RESOURCES/Whitelist.txt", "+a")
+    print(4)
     if str(chat) not in whitelistClean:
+        print(5)
         whitelist.write(f"{chat}\n")
         client.sendText(chat, f"Added `{chat}` to the Whitelist!")
     else:
+        print(6)
         client.sendText(chat, f"`{chat}` Already In whitelist!")
     whitelist.close()
 
 def ban(data, client):
     """Bans a user or chat from the bot."""
-    chat = data["text"].removeprefix("!ban ").strip()
+    chat = data["text"].removeprefix("!ban").strip()
     
     whitelist = open("RESOURCES/Whitelist.txt", "r")
     lines = whitelist.readlines()
