@@ -7,7 +7,11 @@ def route_command(text: str, chat: str, skip_whitelist_check: bool, *args, **kwa
     Routes the command to the appropriate function based on the command name.
     """
 
-    whitelist = open("BOT/Whitelist.txt", "r").read().splitlines()
+    try:
+        whitelist = open("BOT/Whitelist.txt", "r").read().splitlines()
+    except FileNotFoundError:
+        open("BOT/Whitelist.txt", "w").close()  # Create the file if it doesn't exist
+        whitelist = []
 
     if skip_whitelist_check:
         for i in adminCommands: # Iterate through the commands dictionary and run the command if it matches any of the keys
