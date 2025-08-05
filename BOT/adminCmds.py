@@ -2,9 +2,11 @@ def whitelist(data, client):
     """Adds a user or chat to the whitelist."""
     chat = data["chatId"]
     Number = data["text"].removeprefix("!whitelist ").strip()
-    
+
     if Number:
         chat = Number
+
+    print(chat)
     
     whitelistData = open("RESOURCES/Whitelist.txt", "r")
     whitelistClean = [i.strip().strip("\n") for i in whitelistData.readlines()]

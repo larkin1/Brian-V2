@@ -34,8 +34,6 @@ def handle_new_message(msg):
         chat = data["chatId"]
 
         skipCheck = str(data['authorId']) in Admins # If it's the admin, skip the whitelist check.
-
-        print(skipCheck)
         
         # If the message is a suspected comand...
         if data["text"][0] == "!":
