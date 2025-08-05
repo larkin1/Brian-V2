@@ -16,11 +16,7 @@ userCommands = {
     "dla": (Downloads.dla, 
         ["Function to download albums. Uses Youtube search algorithms to find your album.", "To download an album, simply do ```!dla <album name>```"],
         "Download an album."),
-
-    "musicgen": (musicgen.musicgen, 
-        ["NOT CURRENTLY IMPLEMENTED",],
-        "Generate music using AI."),
-
+        
     "test": (testfuncts.test, 
         ["Test"],
         "Text"),
