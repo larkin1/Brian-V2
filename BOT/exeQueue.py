@@ -7,7 +7,7 @@ q = queue.Queue()
 
 def addItem(command, *args, **kwargs):
     """Add an item to the queue."""
-    print(f"[exeQueue] Adding job: {getattr(command, '__name__', str(command))} args={args} kwargs={kwargs}")
+    print(f"[exeQueue] Adding job: {getattr(command, '__name__', str(command))}")
     q.put((command, args, kwargs))
 
 def jobProcessor(max_threads=4):
@@ -15,7 +15,8 @@ def jobProcessor(max_threads=4):
     last_heartbeat = time.time()
     def job_wrapper(command, *args, **kwargs):
         job_name = getattr(command, '__name__', str(command))
-        print(f"[exeQueue] Starting job: {job_name} args={args} kwargs={kwargs}")
+        # print(f"[exeQueue] Starting job: {job_name} args={args} kwargs={kwargs}")
+        print(f"[exeQueue] Starting job: {job_name}")
         try:
             result = command(*args, **kwargs)
             print(f"[exeQueue] Job completed: {job_name}")

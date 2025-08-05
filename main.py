@@ -7,7 +7,38 @@ Admins = globals.Admins
 creator = Create(session="brianv2", browser='chrome', headless=True, catchQR=utils.catchQR, logQR=True, qr='terminal')
 client = creator.start()
 
+import threading
+import sys
+
+def log_and_notify_admin(msg):
+    print(f"[WA-CONN] {msg}")
+    try:
+        client.sendText(Admins[0], f"[WA-CONN] {msg}")
+    except Exception as e:
+        print(f"[WA-CONN] Could not notify admin: {e}")
+
+def handle_state_change(state):
+    log_and_notify_admin(f"Connection state changed: {state}")
+    if state == 'DISCONNECTED':
+        log_and_notify_admin("WhatsApp client disconnected. Attempting to reconnect...")
+        try:
+            creator.reconnect()
+            log_and_notify_admin("Reconnection attempt finished.")
+        except Exception as e:
+            log_and_notify_admin(f"Reconnection failed: {e}")
+            sys.exit(1)
+    elif state == 'QR_REQUIRED':
+        log_and_notify_admin("QR code required. Please scan to continue.")
+    elif state == 'CONNECTED':
+        log_and_notify_admin("WhatsApp client connected.")
+    elif state == 'ERROR':
+        log_and_notify_admin("WhatsApp client error. Exiting.")
+        sys.exit(1)
+
+creator.onStateChange(handle_state_change)
+
 if creator.state != 'CONNECTED':
+    log_and_notify_admin(f"Initial state: {creator.state}")
     raise Exception(creator.state)
 
 def handle_new_message(msg):
