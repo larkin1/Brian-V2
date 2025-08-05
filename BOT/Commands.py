@@ -16,10 +16,14 @@ userCommands = {
     "dla": (Downloads.dla, 
         ["Function to download albums. Uses Youtube search algorithms to find your album.", "To download an album, simply do ```!dla <album name>```"],
         "Download an album."),
-        
+
     "test": (testfuncts.test, 
         ["Test"],
         "Text"),
+
+    "lss": (Downloads.lss, 
+        ["Function to search for songs. Uses Youtube search algorithms to find your song.", "To search for a song, simply do ```!lss <song name>```"],
+        "Search for a song."),
 }
 
 adminCommands = userCommands.copy()
