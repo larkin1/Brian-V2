@@ -52,7 +52,7 @@ def songLookup(songs: list) -> tuple:
     
     def search(item):
         try:
-            return music.search(item, filter='songs', limit=1)
+            return music.search(item, filter='songs')
         except Exception as e:
             errors.append((item, str(e)))
             return None
@@ -61,18 +61,19 @@ def songLookup(songs: list) -> tuple:
         
     cookedResults = []
 
-    print(results)
     for i in results:
-        print(i)
-        item = i[0]
-        artists = item.get("artists", [])
-        arts = ", ".join(j.get("name", "") for j in artists)
-        cookedResults.append(
-            {"title":item.get("title", ""), 
-             "id":item.get("videoId", ""), 
-             "artists":arts}
-        )
-        
+        try:
+            item = i[0]
+            artists = item.get("artists", [])
+            arts = ", ".join(j.get("name", "") for j in artists)
+            cookedResults.append(
+                {"title":item.get("title", ""), 
+                "id":item.get("videoId", ""), 
+                "artists":arts}
+            )
+        except Exception as e:
+            errors.append((item, str(e)))
+
     return (cookedResults, errors)
 
 def albumLookup(album: str) -> tuple:
