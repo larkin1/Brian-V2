@@ -22,7 +22,7 @@ def handle_new_message(msg):
         try:
             DbMgmt.saveRecord(data['chatId'], datetime.datetime.now(datetime.UTC).timestamp(), data['text'], data['authorId'], data['messageId'])
         except:
-            for i in range(10):
+            for i in range(4):
                 try:
                     DbMgmt.saveRecord(data['chatId'], datetime.datetime.now(datetime.UTC).timestamp(), data['text'], data['authorId'], data['messageId'])
                     break
