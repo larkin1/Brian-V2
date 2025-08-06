@@ -1,8 +1,15 @@
 # Help Command. Routes appropriate help messages to the user.
 
+from BOT import adminCmds
+
+
 def help(data, client):
     """Sends a help message to the user."""
-    from BOT.Commands import userCommands
+    from BOT.Commands import userCommands, adminCommands
+    from globals import Admins
+
+    if data['chatId'] in Admins:
+        userCommands = adminCommands
 
     if data["text"].lower().strip() == "!help":
         commandList = "\n".join(
@@ -10,7 +17,7 @@ def help(data, client):
             else f"`!{i}`" for i in userCommands
         )
 
-        text = f"""*Hi, I'm Brian II (The second)*
+        text = f"""*Hi, I'm Brian v2.0*
         
 To learn more about a command and how to use it, type:
 `!help <Command name>`
