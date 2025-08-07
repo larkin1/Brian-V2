@@ -6,7 +6,7 @@ from BOT import adminCmds
 def help(data, client):
     """Sends a help message to the user."""
     from BOT.Commands import userCommands, adminCommands
-    from globals import Admins
+    from BOT.globals import Admins
 
     if data['chatId'] in Admins:
         userCommands = adminCommands
