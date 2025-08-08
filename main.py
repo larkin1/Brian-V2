@@ -9,6 +9,30 @@ client = creator.start()
 
 import threading
 import sys
+import os
+
+HEALTH_CHECK_INTERVAL = 10  # seconds
+MAX_FAILED_PINGS = 3
+failed_pings = 0
+
+def health_check_loop():
+    global failed_pings
+    while True:
+        try:
+            # Replace with a lightweight, always-safe API call
+            client.getHostDevice()  # or any harmless method
+            failed_pings = 0  # Reset on success
+        except Exception as e:
+            failed_pings += 1
+            print(f"[WA-HEALTH] Health check failed ({failed_pings}/{MAX_FAILED_PINGS}): {e}")
+            if failed_pings >= MAX_FAILED_PINGS:
+                print("[WA-HEALTH] Max failed health checks reached. Restarting chatbot...")
+                os.execv(sys.executable, [sys.executable] + sys.argv)
+        time.sleep(HEALTH_CHECK_INTERVAL)
+
+# Start the health check thread
+t = threading.Thread(target=health_check_loop, daemon=True)
+t.start()
 
 def log_and_notify_admin(msg):
     print(f"[WA-CONN] {msg}")
