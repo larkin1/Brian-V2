@@ -6,10 +6,12 @@ receives every non-command message in that chat. Disable with exit_stream or the
 
 Handlers will be invoked with the usual (data, client) signature.
 """
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict, Optional, List
 
 # Map of chat_id -> { 'handler': callable, 'name': str }
 _active_streams: Dict[str, Dict[str, object]] = {}
+# Per-chat suppression of next message(s) by exact text, to avoid echo loops
+_suppress_next: Dict[str, List[str]] = {}
 
 
 def enter_stream(chat_id: str, handler: Callable, name: Optional[str] = None) -> None:
@@ -47,3 +49,27 @@ def exit_command(data, client):
         client.sendText(chat_id, "Exited stream mode.")
     else:
         client.sendText(chat_id, "No active stream.")
+
+
+# Echo suppression helpers
+def suppress_next(chat_id: str, text: str) -> None:
+    """Mark the next outgoing message with this text in this chat to be ignored by the dispatcher."""
+    _suppress_next.setdefault(chat_id, []).append(text)
+
+
+def should_suppress(chat_id: str, text: Optional[str]) -> bool:
+    """Return True and consume suppression if this (chat, text) is marked for one-time ignore."""
+    if text is None:
+        return False
+    pending = _suppress_next.get(chat_id)
+    if not pending:
+        return False
+    try:
+        idx = pending.index(text)
+    except ValueError:
+        return False
+    # Remove the matched item
+    pending.pop(idx)
+    if not pending:
+        _suppress_next.pop(chat_id, None)
+    return True

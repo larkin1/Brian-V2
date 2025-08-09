@@ -9,17 +9,19 @@ def _mirror_handler(data, client):
     if not txt:
         return
     # Only mirror non-commands; commands are handled by router before this.
+    session.suppress_next(data['chatId'], txt)
     client.sendText(data['chatId'], txt)
 
 
 def test(data, client):
     """Enter mirror stream mode for this chat until !exit is received."""
     session.enter_stream(data['chatId'], _mirror_handler, name="mirror")
-    client.sendText(
-        data['chatId'],
+    notice = (
         "Mirror mode enabled. Send messages and I'll echo them. Send !exit to stop.\n"
-        f"Author Id: ```{data['authorId']}```\nChat Id: ```{data['chatId']}```",
+        f"Author Id: ```{data['authorId']}```\nChat Id: ```{data['chatId']}```"
     )
+    session.suppress_next(data['chatId'], notice)
+    client.sendText(data['chatId'], notice)
 
 
 def adminTest(data, client):

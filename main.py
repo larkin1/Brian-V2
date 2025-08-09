@@ -73,6 +73,13 @@ def handle_new_message(msg):
         # Get the data into a more useable dict.
         data = utils.newGetMessageData(msg)
 
+        # Suppress only our own immediate echo content (loop-safe, still allows owner use)
+        try:
+            if session.should_suppress(data['chatId'], data['text']):
+                return
+        except Exception:
+            pass
+
         # Save the message to the database (if the database is already in use, it retries up to 10 times with a backoff).
         try:
             DbMgmt.saveRecord(data['chatId'], datetime.datetime.now(datetime.UTC).timestamp(), data['text'], data['authorId'], data['messageId'])
