@@ -1,4 +1,4 @@
-import BOT.YT.Downloads as Downloads, BOT.AI.musicgen as musicgen, BOT.help as help, BOT.adminCmds as adminCmds, BOT.testfuncts as testfuncts
+import BOT.YT.Downloads as Downloads, BOT.AI.musicgen as musicgen, BOT.help as help, BOT.adminCmds as adminCmds, BOT.testfuncts as testfuncts, BOT.session as session
 # This file contains the command mappings for the bot.
 # Each command is associated with a function that will be executed when the command is called.
 # For each command, the first element is the function to call, the second element is a list of help messages, and the third is a short descriptor string.
@@ -20,6 +20,10 @@ userCommands = {
     "test": (testfuncts.test, 
         ["Test"],
         "Text"),
+
+    "exit": (session.exit_command,
+        ["Exit the current streaming mode started by a command."],
+        "Exit stream mode."),
 
     "lss": (Downloads.lss, 
         ["Function to search for songs. Uses Youtube search algorithms to find your song.", "To search for a song, simply do ```!lss <song name>```"],

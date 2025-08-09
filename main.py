@@ -1,4 +1,4 @@
-import BOT.utils as utils, BOT.Routing as Routing, BOT.DbMgmt as DbMgmt, datetime, time, threading, BOT.exeQueue as exeQueue, BOT.globals as globals
+import BOT.utils as utils, BOT.Routing as Routing, BOT.DbMgmt as DbMgmt, datetime, time, threading, BOT.exeQueue as exeQueue, BOT.globals as globals, BOT.session as session
 from WPP_Whatsapp import Create
 # brian\scripts\activate
 
@@ -90,12 +90,20 @@ def handle_new_message(msg):
 
         skipCheck = str(data['authorId']) in Admins # If it's the admin, skip the whitelist check.
         
-        # If the message is a suspected comand...
+        # If the message is a suspected command, route it. Otherwise, if a stream is active, forward to its handler.
         if data["text"][0] == "!":
             try:
                 Routing.route_command(data['text'], chat, skipCheck, data, client)
             except Exception as e:
                 print(f"{utils.Colors.White}{utils.Colors.Red}[Error] {utils.Colors.White}{e.__class__.__name__}: {utils.Colors.Blue}{e}{utils.Colors.White}")
+        else:
+            try:
+                if session.is_active(chat):
+                    handler = session.get_handler(chat)
+                    if handler:
+                        handler(data, client)
+            except Exception as e:
+                print(f"{utils.Colors.White}{utils.Colors.Red}[Stream Error] {utils.Colors.White}{e.__class__.__name__}: {utils.Colors.Blue}{e}{utils.Colors.White}")
 
 executor = threading.Thread(target=exeQueue.jobProcessor).start()
 
