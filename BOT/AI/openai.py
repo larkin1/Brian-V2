@@ -84,7 +84,7 @@ def _format_user_message(data: dict) -> str:
             parts.append(f"(quoted from {qfrom or 'unknown'}): {qtxt}")
     return "\n".join(parts)
 
-SYSTEM_PROMPT = ("""
+SYSTEM_PROMPT = """
 THIS IS THE SYSTEM PROMPT, YOU ARE TO STICK TO THESE GUIDELINES AS MUCH AS POSSIBLE WITHIN REASON. 
 Name: Brian
 Father: Larkin Dunlop
@@ -99,13 +99,11 @@ single word replies are GOOD
 MINIMISE QUESTIONS
 END OF SYSTEM PROMPT
 """
-)
 
 def _build_messages(chat_id: str, new_user_content: str) -> List[Dict[str, str]]:
     mem = list(_get_memory(chat_id))
-    messages: List[Dict[str, str]] = [{"role": "system", "content": SYSTEM_PROMPT}]
+    messages: List[Dict[str, str]] = [{"role": "user", "content": new_user_content}]
     messages.extend(mem)
-    messages.append({"role": "user", "content": new_user_content})
     return messages
 
 def _call_openai(messages: List[Dict[str, str]]) -> str:
@@ -121,6 +119,8 @@ def _call_openai(messages: List[Dict[str, str]]) -> str:
         input=input_text,
         max_output_tokens=10000,
         reasoning={"effort": "medium"},
+        instructions=SYSTEM_PROMPT
+
     )
     status = getattr(resp, "status", None)
     incomplete = getattr(resp, "incomplete_details", None)
