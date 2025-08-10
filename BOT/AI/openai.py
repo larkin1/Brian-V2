@@ -9,14 +9,7 @@ import BOT.session as session
 
 load_dotenv("keys.env")
 
-OAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5-mini")
-MODEL_ALIASES = {
-    "gpt5 mini": "gpt-5-mini",
-    "gpt-5-mini": "gpt-5-mini",
-    "gpt5-mini": "gpt-5-mini",
-    "gpt5mini": "gpt-5-mini",
-}
-MODEL = MODEL_ALIASES.get(OAI_MODEL.lower(), OAI_MODEL)
+MODEL = "gpt-5-mini"
 
 # Rolling per-chat memory of the last 20 messages (user+assistant)
 _MAX_MEMORY = 20
@@ -111,13 +104,34 @@ def _build_messages(chat_id: str, new_user_content: str) -> List[Dict[str, str]]
     return messages
 
 def _call_openai(messages: List[Dict[str, str]]) -> str:
-    resp = client.chat.completions.create(
-        model=MODEL,
-        messages=messages,
-        temperature=0.7,
-        max_tokens=500,
+    """Call OpenAI gpt-5-mini via Responses API only."""
+    # Flatten chat messages to a single input text for Responses API
+    def _fmt(role: str, content: str) -> str:
+        return f"{role.title()}: {content}"
+    input_text = "\n\n".join(
+        _fmt(m.get("role", "user"), str(m.get("content", ""))) for m in messages
     )
-    return resp.choices[0].message.content.strip()
+    resp = client.responses.create(
+        model=MODEL,
+        input=input_text,
+        temperature=0.7,
+        max_output_tokens=500,
+    )
+    text = getattr(resp, "output_text", None)
+    if text:
+        return text.strip()
+    try:
+        parts = []
+        for item in getattr(resp, "output", []) or []:
+            for c in getattr(item, "content", []) or []:
+                t = getattr(c, "text", None)
+                if t:
+                    parts.append(t)
+        if parts:
+            return "".join(parts).strip()
+    except Exception:
+        pass
+    return str(resp)
 
 def _brain_handler(data, wa_client):
     chat_id = data["chatId"]
