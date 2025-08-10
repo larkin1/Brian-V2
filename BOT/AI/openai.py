@@ -114,11 +114,18 @@ def _call_openai(messages: List[Dict[str, str]]) -> str:
     resp = client.responses.create(
         model=MODEL,
         input=input_text,
-        max_output_tokens=500,
+        max_output_tokens=10000,
+        reasoning={"effort": "medium"},
     )
+    status = getattr(resp, "status", None)
+    incomplete = getattr(resp, "incomplete_details", None)
     text = getattr(resp, "output_text", None)
     if text:
-        return text.strip()
+        t = text.strip()
+        # If truncated by output cap, surface the partial text and mark it
+        if status == "incomplete" and getattr(incomplete, "reason", None) == "max_output_tokens":
+            return (t + "\n\n… [truncated]") if t else "[truncated: hit max_output_tokens]"
+        return t
     try:
         parts = []
         for item in getattr(resp, "output", []) or []:
@@ -127,9 +134,15 @@ def _call_openai(messages: List[Dict[str, str]]) -> str:
                 if t:
                     parts.append(t)
         if parts:
-            return "".join(parts).strip()
+            joined = "".join(parts).strip()
+            if status == "incomplete" and getattr(incomplete, "reason", None) == "max_output_tokens":
+                return (joined + "\n\n… [truncated]") if joined else "[truncated: hit max_output_tokens]"
+            return joined
     except Exception:
         pass
+    # Last resort: concise notice
+    if status == "incomplete" and getattr(incomplete, "reason", None) == "max_output_tokens":
+        return "[Response truncated by output limit]"
     return str(resp)
 
 def _brain_handler(data, wa_client):
