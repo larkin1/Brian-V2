@@ -102,8 +102,11 @@ END OF SYSTEM PROMPT
 
 def _build_messages(chat_id: str, new_user_content: str) -> List[Dict[str, str]]:
     mem = list(_get_memory(chat_id))
-    messages: List[Dict[str, str]] = [{"role": "user", "content": new_user_content}]
+    # Use Responses `instructions` for the system prompt.
+    # Order should be: prior memory first, then the current user message LAST.
+    messages: List[Dict[str, str]] = []
     messages.extend(mem)
+    messages.append({"role": "user", "content": new_user_content})
     return messages
 
 def _call_openai(messages: List[Dict[str, str]]) -> str:
