@@ -1,0 +1,161 @@
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
+from collections import deque
+from typing import Deque, Dict, List
+import json
+
+import BOT.session as session
+
+load_dotenv("keys.env")
+
+OAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5-mini")
+MODEL_ALIASES = {
+    "gpt5 mini": "gpt-5-mini",
+    "gpt-5-mini": "gpt-5-mini",
+    "gpt5-mini": "gpt-5-mini",
+    "gpt5mini": "gpt-5-mini",
+}
+MODEL = MODEL_ALIASES.get(OAI_MODEL.lower(), OAI_MODEL)
+
+# Rolling per-chat memory of the last 20 messages (user+assistant)
+_MAX_MEMORY = 20
+_chat_memory: Dict[str, Deque[Dict[str, str]]] = {}
+
+# Persistent storage (JSON file)
+MEMORY_FILE = os.getenv("BRAIN_MEMORY_FILE", os.path.join("BOT", "AI", "brain_memory.json"))
+
+def _ensure_parent_dir(path: str) -> None:
+    try:
+        parent = os.path.dirname(path)
+        if parent and not os.path.exists(parent):
+            os.makedirs(parent, exist_ok=True)
+    except Exception:
+        pass
+
+def _serialize_memory() -> Dict[str, List[Dict[str, str]]]:
+    return {chat: list(q) for chat, q in _chat_memory.items() if q}
+
+def _save_all_memory() -> None:
+    data = _serialize_memory()
+    try:
+        _ensure_parent_dir(MEMORY_FILE)
+        tmp = MEMORY_FILE + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False)
+        os.replace(tmp, MEMORY_FILE)
+    except Exception:
+        # Non-fatal; persistence best-effort
+        pass
+
+def _load_all_memory() -> None:
+    try:
+        with open(MEMORY_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        if isinstance(data, dict):
+            for chat, msgs in data.items():
+                dq = deque(maxlen=_MAX_MEMORY)
+                if isinstance(msgs, list):
+                    for m in msgs[-_MAX_MEMORY:]:
+                        if isinstance(m, dict) and "role" in m and "content" in m:
+                            dq.append({"role": m["role"], "content": m["content"]})
+                if dq:
+                    _chat_memory[chat] = dq
+    except FileNotFoundError:
+        pass
+    except Exception:
+        # Ignore malformed file
+        pass
+
+_load_all_memory()
+
+def _get_memory(chat_id: str) -> Deque[Dict[str, str]]:
+    q = _chat_memory.get(chat_id)
+    if q is None:
+        q = deque(maxlen=_MAX_MEMORY)
+        _chat_memory[chat_id] = q
+    return q
+
+def _format_user_message(data: dict) -> str:
+    parts: List[str] = []
+    author = data.get("authorName") or data.get("authorId") or "user"
+    txt = data.get("text")
+    if txt:
+        parts.append(f"{author}: {txt}")
+    else:
+        parts.append(f"{author}: [non-text message]")
+    if data.get("hasQuote"):
+        qtxt = data.get("quotedText")
+        qfrom = data.get("quotedParticipant")
+        if qtxt:
+            parts.append(f"(quoted from {qfrom or 'unknown'}): {qtxt}")
+    return "\n".join(parts)
+
+SYSTEM_PROMPT = ("""Name: Brian
+Father: Larkin Dunlop
+Personality (100 total): %10DarkHumor %20InsultingHumour %25Chill %25Blunt %10Silly %10Republican
+use blunt, short messages and no emojis
+use occasional curses eg shit, damn, bastard  (~30% of the time) and never censor words
+Say words to the effect of Couldn't Be Fucked for long responses (>1/2 paragraph)
+Only use the name if absolutley necesary
+single word replies are GOOD
+MINIMISE QUESTIONS
+"""
+)
+
+def _build_messages(chat_id: str, new_user_content: str) -> List[Dict[str, str]]:
+    mem = list(_get_memory(chat_id))
+    messages: List[Dict[str, str]] = [{"role": "system", "content": SYSTEM_PROMPT}]
+    messages.extend(mem)
+    messages.append({"role": "user", "content": new_user_content})
+    return messages
+
+def _call_openai(messages: List[Dict[str, str]]) -> str:
+    resp = client.chat.completions.create(
+        model=MODEL,
+        messages=messages,
+        temperature=0.7,
+        max_tokens=500,
+    )
+    return resp.choices[0].message.content.strip()
+
+def _brain_handler(data, wa_client):
+    chat_id = data["chatId"]
+    user_content = _format_user_message(data)
+    msgs = _build_messages(chat_id, user_content)
+    try:
+        reply = _call_openai(msgs)
+    except Exception as e:
+        reply = f"Error contacting AI: {e.__class__.__name__}: {e}"
+    mem = _get_memory(chat_id)
+    mem.append({"role": "user", "content": user_content})
+    mem.append({"role": "assistant", "content": reply})
+    _save_all_memory()
+    try:
+        session.suppress_next(chat_id, reply)
+    except Exception:
+        pass
+    try:
+        wa_client.sendText(chat_id, reply, {"quotedMsg": data.get("messageId")})
+    except Exception:
+        wa_client.sendText(chat_id, reply)
+
+def brain(data, wa_client):
+    """
+    Command handler for !brain.
+    Enters AI chat stream mode for this chat. Use !exit to stop.
+    """
+    chat_id = data["chatId"]
+    session.enter_stream(chat_id, _brain_handler, name="brain")
+    notice = (
+        "Brain enabled. Send messages and I'll reply. Use !exit to stop.\n"
+        f"Model: {MODEL}\n"
+        "I'll remember the last 20 messages in this chat."
+    )
+    try:
+        session.suppress_next(chat_id, notice)
+    except Exception:
+        pass
+    wa_client.sendText(chat_id, notice)
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))

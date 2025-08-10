@@ -1,4 +1,4 @@
-import BOT.YT.Downloads as Downloads, BOT.AI.musicgen as musicgen, BOT.help as help, BOT.adminCmds as adminCmds, BOT.testfuncts as testfuncts, BOT.session as session
+import BOT.YT.Downloads as Downloads, BOT.AI.musicgen as musicgen, BOT.help as help, BOT.adminCmds as adminCmds, BOT.testfuncts as testfuncts, BOT.session as session, BOT.AI.openai as brainai
 # This file contains the command mappings for the bot.
 # Each command is associated with a function that will be executed when the command is called.
 # For each command, the first element is the function to call, the second element is a list of help messages, and the third is a short descriptor string.
@@ -17,14 +17,6 @@ userCommands = {
         ["Function to download albums. Uses Youtube search algorithms to find your album.", "To download an album, simply do ```!dla <album name>```"],
         "Download an album."),
 
-    "test": (testfuncts.test, 
-        ["Test"],
-        "Text"),
-
-    "exit": (session.exit_command,
-        ["Exit the current streaming mode started by a command."],
-        "Exit stream mode."),
-
     "lss": (Downloads.lss, 
         ["Function to search for songs. Uses Youtube search algorithms to find your song.", "To search for a song, simply do ```!lss <song name>```"],
         "Search for a song."),
@@ -32,6 +24,19 @@ userCommands = {
     "lsa": (Downloads.lsa, 
         ["Function to search for albums. Uses Youtube search algorithms to find your album.", "To search for an album, simply do ```!lsa <album name>```"],
         "Search for an album."),
+
+    "brain": (brainai.brain,
+        ["Start an AI chat session. Use `!brain` to start, then chat normally. Use `!exit` to stop.",
+         "Remembers the last 20 messages in this chat. Supports quoted messages and shows usernames."],
+        "AI Chat (Brain)"),
+
+    "test": (testfuncts.test, 
+        ["Test"],
+        "Test"),
+
+    "exit": (session.exit_command,
+        ["Exit the current streaming mode started by a command."],
+        "Exit stream mode."),
 }
 
 adminCommands = userCommands.copy()

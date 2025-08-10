@@ -3,3 +3,5 @@ gradio_client
 yt-dlp
 ytmusicapi
 pillow
+openai
+python-dotenv
