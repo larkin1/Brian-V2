@@ -114,7 +114,6 @@ def _call_openai(messages: List[Dict[str, str]]) -> str:
     resp = client.responses.create(
         model=MODEL,
         input=input_text,
-        temperature=0.7,
         max_output_tokens=500,
     )
     text = getattr(resp, "output_text", None)
