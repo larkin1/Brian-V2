@@ -5,24 +5,29 @@
 Brian is a lil chatbot for whatsapp that i created to learn how to code... this is the second iteration of that, with better structure to the code and an easier way of doing things. 
 
 ## What can Brian do?
-Not much at the moment, currently brian is just a shell waiting to be filled with commands.
+Brian is a chatbot that can run on a normal whatsapp account (no shitty meta BS involved)
+
+### He can currently:
+ - Download songs & albums
+ - AI chat with brian
+ - Random other commands and features probably ehhh
 
 ## Where is Brian v1?
-In the deepest, darkest depths of my dusty old computer, never to be seen by anyone but myself 😉
+### **DON'T ASK**
 
 ## Installing
-Download it and install the requirements.<br>
-Note: you will need ffmpeg.
+We don't go there.
+There is a bunch of cookies files to make and other random files and its just a PITA
+All that to say: instructions coming when i figure out how to make it easy
 
 ## To-do:
 ### Features:
  - ~~Song Downloader~~
- - Album Downloader
- - AI song Generator
+ - ~~Album Downloader~~
  - AI image generator
- - ChatGPT chat (BrAIn)
+ - ~~ChatGPT chat (BrAIn)~~
+ - Text to Shakespeare
 ### General:
- - Back-and-forth chatting. (eg the bot asks "are you sure you want to procede?")
- - Get a virtual phone number so it doesnt run on my personal number
- - Put it on a server
+ - ~~Back-and-forth chatting. (eg the bot asks "are you sure you want to procede?")~~
+ - ~~Put it on a server~~
  - Subscription tiers
