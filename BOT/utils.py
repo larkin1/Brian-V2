@@ -29,7 +29,7 @@ def printMessage(message, user, username):
     Prints the message to the console with color coding based on whether the user is a user or not.
     """
     if message:
-        whitelist = open("BOT/Whitelist.txt", "r").read().splitlines()
+        whitelist = open("Whitelist.txt", "r").read().splitlines()
         if user not in whitelist:
             if message[0] == "!":
                 print(f"{Colors.White}{(f"{Colors.Red}[Command] {Colors.White}" + str(username) + ':')} {Colors.Blue}{message}{Colors.White}")

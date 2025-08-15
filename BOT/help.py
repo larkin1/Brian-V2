@@ -1,8 +1,5 @@
 # Help Command. Routes appropriate help messages to the user.
 
-from BOT import adminCmds
-
-
 def help(data, client):
     """Sends a help message to the user."""
     from BOT.Commands import userCommands, adminCommands

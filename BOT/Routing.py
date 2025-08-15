@@ -8,9 +8,9 @@ def route_command(text: str, chat: str, skip_whitelist_check: bool, *args, **kwa
     """
 
     try:
-        whitelist = open("BOT/Whitelist.txt", "r").read().splitlines()
+        whitelist = open("Whitelist.txt", "r").read().splitlines()
     except FileNotFoundError:
-        open("BOT/Whitelist.txt", "w").close()  # Create the file if it doesn't exist
+        open("Whitelist.txt", "w").close()  # Create the file if it doesn't exist
         whitelist = []
 
     if skip_whitelist_check:

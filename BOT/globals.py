@@ -1,3 +1,5 @@
 main_loop = None
 client = None
-Admins = ['REDACTED@c.us']
+
+with open('admins.txt', 'r') as file:
+    Admins = [line.strip() for line in file if line.strip()]

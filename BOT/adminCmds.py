@@ -25,15 +25,15 @@ def whitelist(data, client):
 
     # Read the current whitelist
     try:
-        with open("BOT/Whitelist.txt", "r") as whitelistData:
+        with open("Whitelist.txt", "r") as whitelistData:
             whitelistClean = [i.strip().strip("\n") for i in whitelistData.readlines()]
     except FileNotFoundError:
         whitelistClean = []
-        open("BOT/Whitelist.txt", "w").close()
+        open("Whitelist.txt", "w").close()
 
     added = []
     already = []
-    with open("BOT/Whitelist.txt", "a") as whitelist:
+    with open("Whitelist.txt", "a") as whitelist:
         for entry in to_add:
             if entry and entry not in whitelistClean:
                 whitelist.write(f"{entry}\n")
@@ -71,11 +71,11 @@ def ban(data, client):
 
     # Read the current whitelist
     try:
-        with open("BOT/Whitelist.txt", "r") as whitelistData:
+        with open("Whitelist.txt", "r") as whitelistData:
             whitelistClean = [i.strip().strip("\n") for i in whitelistData.readlines()]
     except FileNotFoundError:
         whitelistClean = []
-        open("BOT/Whitelist.txt", "w").close()
+        open("Whitelist.txt", "w").close()
 
     removed = []
     not_found = []
@@ -87,7 +87,7 @@ def ban(data, client):
         else:
             not_found.append(entry)
     # Write updated whitelist
-    with open("BOT/Whitelist.txt", "w") as whitelist:
+    with open("Whitelist.txt", "w") as whitelist:
         for w in new_whitelist:
             whitelist.write(w + "\n")
 

@@ -12,3 +12,4 @@ BOT/YT/ytdlp-cookies.txt
 BOT/YT/YtMusicAuth.json
 keys.env
 .venv/
+admins.txt
