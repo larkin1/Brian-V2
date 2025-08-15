@@ -1,26 +1,46 @@
-import BOT.utils as utils, BOT.Routing as Routing, BOT.DbMgmt as DbMgmt, datetime, time, threading, BOT.exeQueue as exeQueue, BOT.globals as globals, BOT.session as session
-from WPP_Whatsapp import Create
-# brian\scripts\activate
-
-Admins = globals.Admins
-
-creator = Create(session="brianv2", browser='chrome', headless=True, catchQR=utils.catchQR, logQR=True, qr='terminal')
-client = creator.start()
-
+import datetime
+import time
 import threading
 import sys
 import os
 
-HEALTH_CHECK_INTERVAL = 10  # seconds
+from WPP_Whatsapp import Create
+
+import BOT.utils as utils
+import BOT.Routing as Routing
+import BOT.DbMgmt as DbMgmt
+import BOT.exeQueue as exeQueue
+import BOT.globals as globals
+import BOT.session as session
+
+Admins = globals.Admins
+
+creator = Create(
+    session="brianv2", 
+    browser='chrome', 
+    headless=True, 
+    catchQR=utils.catchQR, 
+    logQR=True, 
+    qr='terminal'
+)
+
+client = creator.start()
+
+HEALTH_CHECK_INTERVAL = 10 # seconds
 MAX_FAILED_PINGS = 3
 failed_pings = 0
 
+
 def health_check_loop():
+    """
+    Make sure the browser session isn't borked.
+    Restarts the bot if it is.
+    There is prolly a better way than just restarting the whole bot but ehh.
+    """
     global failed_pings
     while True:
         try:
-            # Replace with a lightweight, always-safe API call
-            client.getHostDevice()  # or any harmless method
+            client.getHostDevice()  # Harmless Method to check browser state
             failed_pings = 0  # Reset on success
         except Exception as e:
             failed_pings += 1
@@ -30,21 +50,28 @@ def health_check_loop():
                 os.execv(sys.executable, [sys.executable] + sys.argv)
         time.sleep(HEALTH_CHECK_INTERVAL)
 
-# Start the health check thread
-t = threading.Thread(target=health_check_loop, daemon=True)
-t.start()
 
 def log_and_notify_admin(msg):
+    """
+    Logs a message and sends it to the admin.
+    I got sick of constant messages, thus the commented out section.
+    """
     print(f"[WA-CONN] {msg}")
-    try:
-        client.sendText(Admins[0], f"[WA-CONN] {msg}")
-    except Exception as e:
-        print(f"[WA-CONN] Could not notify admin: {e}")
+    # try:
+    #     client.sendText(Admins[0], f"[WA-CONN] {msg}")
+    # except Exception as e:
+    #     print(f"[WA-CONN] Could not notify admin: {e}")
+
 
 def handle_state_change(state):
+    """
+    Identify what happened, and log it.
+    """
     log_and_notify_admin(f"Connection state changed: {state}")
     if state == 'DISCONNECTED':
-        log_and_notify_admin("WhatsApp client disconnected. Attempting to reconnect...")
+        log_and_notify_admin(
+            "WhatsApp client disconnected. Attempting to reconnect..."
+        )
         try:
             creator.reconnect()
             log_and_notify_admin("Reconnection attempt finished.")
@@ -59,50 +86,78 @@ def handle_state_change(state):
         log_and_notify_admin("WhatsApp client error. Exiting.")
         sys.exit(1)
 
-client.onStateChange(handle_state_change)
-
-if creator.state != 'CONNECTED':
-    log_and_notify_admin(f"Initial state: {creator.state}")
-    raise Exception(creator.state)
 
 def handle_new_message(msg):
     """Function to handle new messages received by the client."""
     global client
     
-    if str(msg.get("chatId").get("_serialized")) != "status@broadcast" and msg.get("body"): # checking that the message is valid and not a status message
+    if (
+        str(msg.get("chatId").get("_serialized")) != "status@broadcast" 
+        and msg.get("body")
+    ): # checking that the message is valid and not a status message
+
         # Get the data into a more useable dict.
         data = utils.newGetMessageData(msg)
 
-        # Suppress only our own immediate echo content (loop-safe, still allows owner use)
+        # Echo loop Check for sessions.
         try:
             if session.should_suppress(data['chatId'], data['text']):
                 return
         except Exception:
             pass
 
-        # Save the message to the database (if the database is already in use, it retries up to 10 times with a backoff).
+        # Save the message to the database
         try:
-            DbMgmt.saveRecord(data['chatId'], datetime.datetime.now(datetime.UTC).timestamp(), data['text'], data['authorId'], data['messageId'])
-        except:
-            for i in range(4):
+            DbMgmt.saveRecord(
+                data['chatId'], 
+                datetime.datetime.now(datetime.UTC).timestamp(), 
+                data['text'], 
+                data['authorId'], 
+                data['messageId']
+            )
+        except: # if the db is in use, retry with backoff
+            for i in range(4): 
                 try:
-                    DbMgmt.saveRecord(data['chatId'], datetime.datetime.now(datetime.UTC).timestamp(), data['text'], data['authorId'], data['messageId'])
+                    DbMgmt.saveRecord(
+                        data['chatId'], 
+                        datetime.datetime.now(datetime.UTC).timestamp(), 
+                        data['text'], 
+                        data['authorId'], 
+                        data['messageId']
+                    )
                     break
                 except: time.sleep(i)
 
-        # Print the message using the correct format, depending on user status and other variables
-        utils.printMessage(data['text'], data['authorId'], data['authorName'])
+        # Print the message in ~~fancy~~
+        utils.printMessage(
+            data['text'], 
+            data['authorId'], 
+            data['authorName']
+        )
 
         chat = data["chatId"]
 
-        skipCheck = str(data['authorId']) in Admins # If it's the admin, skip the whitelist check.
+        # If it's the admin, skip the whitelist check.
+        skipCheck = str(data['authorId']) in Admins
         
-        # If the message is a suspected command, route it. Otherwise, if a stream is active, forward to its handler.
+        # If the message is a suspected command, route it. 
+        # Otherwise, if a stream is active, forward to its handler.
         if data["text"][0] == "!":
             try:
-                Routing.route_command(data['text'], chat, skipCheck, data, client)
+                Routing.route_command(
+                    data['text'], 
+                    chat, 
+                    skipCheck, 
+                    data, 
+                    client
+                )
             except Exception as e:
-                print(f"{utils.Colors.White}{utils.Colors.Red}[Error] {utils.Colors.White}{e.__class__.__name__}: {utils.Colors.Blue}{e}{utils.Colors.White}")
+                error_message = (
+                    f"{utils.Colors.Red}[Error] "
+                    f"{utils.Colors.White}{e.__class__.__name__}: "
+                    f"{utils.Colors.Blue}{e}{utils.Colors.White}"
+                )
+                print(error_message)
         else:
             try:
                 if session.is_active(chat):
@@ -110,19 +165,36 @@ def handle_new_message(msg):
                     if handler:
                         handler(data, client)
             except Exception as e:
-                print(f"{utils.Colors.White}{utils.Colors.Red}[Stream Error] {utils.Colors.White}{e.__class__.__name__}: {utils.Colors.Blue}{e}{utils.Colors.White}")
+                error_message = (
+                    f"{utils.Colors.Red}[Stream Error] "
+                    f"{utils.Colors.White}{e.__class__.__name__}: "
+                    f"{utils.Colors.Blue}{e}{utils.Colors.White}"
+                )
+                print(error_message)
 
-executor = threading.Thread(target=exeQueue.jobProcessor).start()
+if __name__ == "__main__":
+    threading.Thread(
+        target=health_check_loop, 
+        daemon=True
+    ).start()
 
-print("Initialised the client successfully!")
+    client.onStateChange(handle_state_change)
 
-client.sendText(Admins[0], "Brian (v2) started successfully!")
+    if creator.state != 'CONNECTED':
+        log_and_notify_admin(f"Initial state: {creator.state}")
+        raise Exception(creator.state)
 
-# Add Listen To New Message
+    executor = threading.Thread(target=exeQueue.jobProcessor).start()
 
-creator.client.onAnyMessage(handle_new_message)
+    print("Initialised the client successfully!")
 
-globals.main_loop = creator.loop
-globals.client = client
+    client.sendText(Admins[0], "Brian (v2) started successfully!")
 
-creator.loop.run_forever()
+    # Add Listen To New Message
+
+    creator.client.onAnyMessage(handle_new_message)
+
+    globals.main_loop = creator.loop
+    globals.client = client
+
+    creator.loop.run_forever()

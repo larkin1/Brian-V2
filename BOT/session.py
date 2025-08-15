@@ -8,11 +8,30 @@ Handlers will be invoked with the usual (data, client) signature.
 """
 from typing import Callable, Dict, Optional, List
 
+import threading
+
 # Map of chat_id -> { 'handler': callable, 'name': str }
 _active_streams: Dict[str, Dict[str, object]] = {}
 # Per-chat suppression of next message(s) by exact text, to avoid echo loops
 _suppress_next: Dict[str, List[str]] = {}
 
+# Introduce a dictionary to keep track of timers for each active chat
+_active_timers: Dict[str, threading.Timer] = {}
+
+def set_inactivity_timer(chat_id: str) -> None:
+    """Set or reset the inactivity timer for a chat."""
+    if chat_id in _active_timers:
+        _active_timers[chat_id].cancel()  # Cancel the existing timer if it exists
+
+    def timeout_callback():
+        if exit_stream(chat_id):
+            # client.sendText(chat_id, "Session exited due to inactivity.")
+            _active_timers.pop(chat_id, None)
+
+    # Start a new timer for 30 seconds
+    timer = threading.Timer(30.0, timeout_callback)
+    _active_timers[chat_id] = timer
+    timer.start()
 
 def enter_stream(chat_id: str, handler: Callable, name: Optional[str] = None) -> None:
     """Enable streaming for a chat with a given handler."""
@@ -20,6 +39,7 @@ def enter_stream(chat_id: str, handler: Callable, name: Optional[str] = None) ->
         "handler": handler,
         "name": name or getattr(handler, "__name__", "stream"),
     }
+    set_inactivity_timer(chat_id)  # Start the inactivity timer
 
 
 def exit_stream(chat_id: str) -> bool:
@@ -73,3 +93,4 @@ def should_suppress(chat_id: str, text: Optional[str]) -> bool:
     if not pending:
         _suppress_next.pop(chat_id, None)
     return True
+
