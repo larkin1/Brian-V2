@@ -1,5 +1,5 @@
 # BRIAN Version 2 is here!
-(and this time on github hehe)
+(and this time on github heh)
 
 ## What is Brian?
 Brian is a lil chatbot for whatsapp that i created to learn how to code... this is the second iteration of that, with better structure to the code and an easier way of doing things. 
