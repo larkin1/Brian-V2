@@ -19,9 +19,9 @@ Brian is a chatbot that can run on a normal whatsapp account (no shitty meta BS 
 Suck shit lol!!! Almost none of it (with the exception of main.py) even comes close to being readable.
 
 ## Installing
-We don't go there.
-There is a bunch of cookies files to make and other random files and its just a PITA
-All that to say: instructions coming when i figure out how to make it easy
+We don't go there. <br>
+There is a bunch of cookies files to make and other random files and its just a PITA <br>
+So basically instructions coming when i figure out how to make it easy
 
 ## To-do:
 ### Features:
