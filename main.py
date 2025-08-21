@@ -54,9 +54,10 @@ def health_check_loop():
 def log_and_notify_admin(msg):
     """
     Logs a message and sends it to the admin.
-    I got sick of constant messages, thus the commented out section.
     """
     print(f"[WA-CONN] {msg}")
+
+    # I got sick of constant messages, thus the commented out section.
     # try:
     #     client.sendText(Admins[0], f"[WA-CONN] {msg}")
     # except Exception as e:
