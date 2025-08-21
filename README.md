@@ -31,6 +31,7 @@ All that to say: instructions coming when i figure out how to make it easy
  - ~~ChatGPT chat (BrAIn)~~
  - Text to Shakespeare
 ### General:
+ - JSON file for all the stuff that is currently kept in .txt files.
  - ~~Back-and-forth chatting. (eg the bot asks "are you sure you want to procede?")~~
  - ~~Put it on a server~~
  - Subscription tiers
