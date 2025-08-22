@@ -1,8 +1,14 @@
 from BOT.Commands import userCommands, adminCommands
-import BOT.utils as utils, BOT.exeQueue as exeQueue
+from BOT.utils import Colors
+import BOT.exeQueue as exeQueue
 # This file contains the routing logic for commands in the bot.
 
-def route_command(text: str, chat: str, skip_whitelist_check: bool, *args, **kwargs):
+def route_command(
+    text: str, 
+    chat: str, 
+    skip_whitelist_check: bool, 
+    *args, **kwargs
+):
     """
     Routes the command to the appropriate function based on the command name.
     """
@@ -10,19 +16,27 @@ def route_command(text: str, chat: str, skip_whitelist_check: bool, *args, **kwa
     try:
         whitelist = open("Whitelist.txt", "r").read().splitlines()
     except FileNotFoundError:
-        open("Whitelist.txt", "w").close()  # Create the file if it doesn't exist
+        # Create the file if it doesn't exist
+        open("Whitelist.txt", "w").close()
         whitelist = []
 
     if skip_whitelist_check:
-        for i in adminCommands: # Iterate through the commands dictionary and run the command if it matches any of the keys
+        # run the command if it matches any of the keys
+        for i in adminCommands: 
             if text.lower().startswith(f"!{i}"):
                 exeQueue.addItem(adminCommands[i][0], *args, **kwargs)
                 return
 
     elif chat in whitelist:
-        for i in userCommands: # Iterate through the commands dictionary and run the command if it matches any of the keys
+        for i in userCommands: 
+            # run the command if it matches any of the keys
             if text.lower().startswith(f"!{i}"):
                 exeQueue.addItem(userCommands[i][0], *args, **kwargs)
                 return
-
-    print(f"{utils.Colors.White}{utils.Colors.Red}[Error] {utils.Colors.White}{"System"}: {utils.Colors.Blue}{"Command Not Found!"}{utils.Colors.White}")
+    
+    error_message = (
+        f"{Colors.Red}[Error] "
+        f"{Colors.White}System: "
+        f"{Colors.Blue}Command Not Found!{Colors.White}"
+    )
+    print(error_message)

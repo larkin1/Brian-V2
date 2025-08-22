@@ -43,7 +43,7 @@ def zipFolder(path, maxSize=None, savePath="", name="Zipped"):
         paths.append(zip_path)
     return paths
 
-music = YTMusic('BOT/YT/YtMusicAuth.json')
+music = YTMusic("BOT/YT/YtMusicAuth.json")
 
 def songLookup(songs: list) -> tuple:
     """Uses the YT music search api to lookup songs and return a list. the first result in the tuple is the songs, and the second is the errors."""
@@ -52,7 +52,7 @@ def songLookup(songs: list) -> tuple:
     
     def search(item):
         try:
-            return music.search(item, filter='songs')
+            return music.search(item, filter="songs")
         except Exception as e:
             errors.append((item, str(e)))
             return None
@@ -82,7 +82,7 @@ def albumLookup(album: str) -> tuple:
     errors = []
     def search(item):
         try:
-            return music.search(item, filter='albums', limit=1)
+            return music.search(item, filter="albums", limit=1)
         except Exception as e:
             errors.append((item, str(e)))
             return None
@@ -90,8 +90,8 @@ def albumLookup(album: str) -> tuple:
     item = result[0]
     id = item["playlistId"]
     link = f"https://music.youtube.com/playlist?list={id}"
-    title = item['title']
-    artist = item['artists'][0]['name']
+    title = item["title"]
+    artist = item["artists"][0]["name"]
     
     with YTMusic() as lookup:
         id = lookup.get_album_browse_id(id)
@@ -100,14 +100,14 @@ def albumLookup(album: str) -> tuple:
     results = file.get("tracks")    
     listOfSongs = []
     for i in results:
-        artist = ''
-        for j in i['artists']:
-            artist += j['name']+', '
+        artist = ""
+        for j in i["artists"]:
+            artist += j["name"]+", "
         artist = artist.strip(", ")
         titlee = i["title"]
         listOfSongs.append((artist, titlee))
 
-    searchTerms = [f'"{i[1]}" "{title}" "{i[0]}"' for i in listOfSongs]
+    searchTerms = [f"\"{i[1]}\" \"{title}\" \"{i[0]}\"" for i in listOfSongs]
     
     listOfSongs = songLookup(searchTerms)[0]
     
@@ -126,37 +126,37 @@ def downloadSongs(songList: list, outputDir: str="TEMP/YTMusicDownloads", maxWor
     os.makedirs(outputDir, exist_ok=True)
     
     def download(song):
-        url = f"https://music.youtube.com/watch?v={song['id']}"
+        url = f"https://music.youtube.com/watch?v={song["id"]}"
         def safe_filename(s, maxlen=80):
-            s = re.sub(r'[<>:"/\\|?*\']', '', s)  # remove bad chars
+            s = re.sub(r"[<>:\"/\\|?*']", "", s)  # remove bad chars
             return s[:maxlen]
 
-        title = safe_filename(song['title'], 100)
-        artists = safe_filename(song['artists'], 40)
+        title = safe_filename(song["title"], 100)
+        artists = safe_filename(song["artists"], 40)
         filename = f"{title} - {artists}.%(ext)s"
         filepath = os.path.join(outputDir, filename)
 
-        if any(os.path.exists(filepath.replace('%(ext)s', ext)) for ext in ['mp3', 'm4a', 'webm']):
-            return filepath.replace('%(ext)s', "mp3")
+        if any(os.path.exists(filepath.replace("%(ext)s", ext)) for ext in ["mp3", "m4a", "webm"]):
+            return filepath.replace("%(ext)s", "mp3")
         
         ydl_opts = {
-            'format': 'bestaudio/best',
-            'outtmpl': filepath,
-            'writethumbnail': True,
+            "format": "bestaudio/best",
+            "outtmpl": filepath,
+            "writethumbnail": True,
             "cookiefile": "BOT/YT/ytdlp-cookies.txt",
-            'postprocessors': [
+            "postprocessors": [
                 {
-                    'key': 'FFmpegExtractAudio',
-                    'preferredcodec': 'mp3',
-                    'preferredquality': '192',
+                    "key": "FFmpegExtractAudio",
+                    "preferredcodec": "mp3",
+                    "preferredquality": "192",
                 },
                 {
-                    'key': 'FFmpegMetadata',
+                    "key": "FFmpegMetadata",
                 },
             ],
-            'quiet': True,
-            'no_warnings': True,
-            'noprogress': True,
+            "quiet": True,
+            "no_warnings": True,
+            "noprogress": True,
         }
 
         with YoutubeDL(ydl_opts) as ydl:
@@ -176,22 +176,22 @@ def downloadSongs(songList: list, outputDir: str="TEMP/YTMusicDownloads", maxWor
                     top = (height - side) // 2
                     img_cropped = img.crop((left, top, left + side, top + side))
                     jpg_path = thumbnail_path.rsplit(".", 1)[0] + ".jpg"
-                    img_cropped.save(jpg_path, format='WEBP')
+                    img_cropped.save(jpg_path, format="WEBP")
                 except Exception as e:
                     print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}DownloadError: {utils.Colors.Blue}Error cropping thumbnail: {e}{utils.Colors.White}")
 
                 # Embed cropped thumbnail using ffmpeg
                 try:
                     subprocess.run([
-                        'ffmpeg', '-y',
-                        '-i', audio_path,
-                        '-i', jpg_path,
-                        '-map', '0:a', '-map', '1:v',
-                        '-c:a', 'copy',
-                        '-c:v', 'mjpeg',
-                        '-id3v2_version', '3',
-                        '-metadata:s:v', 'title=Album cover',
-                        '-metadata:s:v', 'comment=Cover (front)',
+                        "ffmpeg", "-y",
+                        "-i", audio_path,
+                        "-i", jpg_path,
+                        "-map", "0:a", "-map", "1:v",
+                        "-c:a", "copy",
+                        "-c:v", "mjpeg",
+                        "-id3v2_version", "3",
+                        "-metadata:s:v", "title=Album cover",
+                        "-metadata:s:v", "comment=Cover (front)",
                         audio_path + ".temp.mp3"
                     ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                     os.replace(audio_path + ".temp.mp3", audio_path)
@@ -274,7 +274,7 @@ def albumDl(album: str):
     
     yield results[1], results[2], results[3]  # title, artist, errors
 
-    filename = re.sub(r'[<>:"/\\|?*\']', '', f"{results[1]} - {results[2]}")
+    filename = re.sub(r"[<>:\"/\\|?*']", "", f"{results[1]} - {results[2]}")
 
     try:
         paths = downloadSongs(results[0])
@@ -288,7 +288,7 @@ def albumDl(album: str):
     
 def dls(data: dict, client):
     """Send A Song or Multiple songs based on a seach term."""
-    request = str(data['text'].lower()).removeprefix('!dls').strip()
+    request = str(data["text"].lower()).removeprefix("!dls").strip()
     requestIsMulti = len(request.splitlines()) > 1
     
     if requestIsMulti:
@@ -298,7 +298,7 @@ def dls(data: dict, client):
         errors = next(gen)
         songstr = "*Now downloading:*"
         songNamesList = [
-            f"\n{idx+1}. {song['title']} - {song['artist']}"
+            f"\n{idx+1}. {song["title"]} - {song["artist"]}"
             for idx, song in enumerate(songNames)
         ]
         songstr += "".join(songNamesList)
@@ -308,18 +308,18 @@ def dls(data: dict, client):
         ]
         if errors:
             songstr += "\n\n*The following requests errored:*" + "".join(errs) + "\n\n_Please check spelling or broaden search terms and try again for the errored items._"
-        client.sendText(data['chatId'], songstr, {"quotedMsg":data['messageId']})
+        client.sendText(data["chatId"], songstr, {"quotedMsg":data["messageId"]})
         path = next(gen)
         try:
             print(path)
             if len(path) == 1:
-                client.sendFile(data["chatId"], path[0], {"quotedMsg":data['messageId']}, "SongZip", timeout=60*20)
+                client.sendFile(data["chatId"], path[0], {"quotedMsg":data["messageId"]}, "SongZip", timeout=60*20)
                 os.remove(path[0])
             else:
                 for i in path:
                     print(i)
-                    # client.sendFile(data["chatId"], i, {"quotedMsg":data['messageId'], "caption":f"Zip {path.index(i)+1} of {len(path)}"}, "SongZip", timeout=60*20)
-                    client.sendFile(data["chatId"], i, {"quotedMsg":data['messageId']}, "SongZip", timeout=60*20)
+                    # client.sendFile(data["chatId"], i, {"quotedMsg":data["messageId"], "caption":f"Zip {path.index(i)+1} of {len(path)}"}, "SongZip", timeout=60*20)
+                    client.sendFile(data["chatId"], i, {"quotedMsg":data["messageId"]}, "SongZip", timeout=60*20)
                     print(i, "Done")
                 for i in path:
                         os.remove(i)
@@ -332,14 +332,14 @@ def dls(data: dict, client):
         error = next(gen)
 
         if error:
-            client.sendText(data['chatId'], f"*Error Occurred:* Please check spelling or broaden search terms and try again.", {"quotedMsg":data['messageId']})
-            client.sendText(data['chatId'], f"*Error Details:* `{error[0]}`", {"quotedMsg":data['messageId']})
+            client.sendText(data["chatId"], f"*Error Occurred:* Please check spelling or broaden search terms and try again.", {"quotedMsg":data["messageId"]})
+            client.sendText(data["chatId"], f"*Error Details:* `{error[0]}`", {"quotedMsg":data["messageId"]})
             return
-        songStr = f"*Now downloading:* {songName['title']} - {songName['artist']}"
-        client.sendText(data['chatId'], songStr, {"quotedMsg":data['messageId']})
+        songStr = f"*Now downloading:* {songName["title"]} - {songName["artist"]}"
+        client.sendText(data["chatId"], songStr, {"quotedMsg":data["messageId"]})
         path = next(gen)
         try:
-            client.sendFile(data["chatId"], path, {"quotedMsg":data['messageId'], "type":"document"}, "songFile", timeout=60*20)
+            client.sendFile(data["chatId"], path, {"quotedMsg":data["messageId"], "type":"document"}, "songFile", timeout=60*20)
             os.remove(path)
         except Exception as error:
             print(f"{utils.Colors.White}{utils.Colors.Red}[YT.Downloads] [Error] {utils.Colors.White}SingleSongSendError: {utils.Colors.Blue}Error Sending File: {error}{utils.Colors.White}")
@@ -347,28 +347,28 @@ def dls(data: dict, client):
 def dla(data: dict, client):
     """Send an album based on a search term."""
     
-    gen = albumDl(str(data['text'].lower()).removeprefix('!dla').strip())
+    gen = albumDl(str(data["text"].lower()).removeprefix("!dla").strip())
 
     title, artist, errors = next(gen)
     
     if errors:
-        client.sendText(data['chatId'], f"*Error Occurred:* Please check spelling or broaden search terms and try again.", {"quotedMsg":data['messageId']})
-        client.sendText(data['chatId'], f"*Error Details:* `{errors}`", {"quotedMsg":data['messageId']})
+        client.sendText(data["chatId"], f"*Error Occurred:* Please check spelling or broaden search terms and try again.", {"quotedMsg":data["messageId"]})
+        client.sendText(data["chatId"], f"*Error Details:* `{errors}`", {"quotedMsg":data["messageId"]})
         return
     
     songstr = f"*Now downloading:* {title} - {artist}"
     
-    client.sendText(data['chatId'], songstr, {"quotedMsg":data['messageId']})
+    client.sendText(data["chatId"], songstr, {"quotedMsg":data["messageId"]})
 
     path = next(gen)
 
     try:
         if len(path) == 1:
-            client.sendFile(data["chatId"], path[0], {"quotedMsg":data['messageId']}, "AlbumZip", timeout=60*20)
+            client.sendFile(data["chatId"], path[0], {"quotedMsg":data["messageId"]}, "AlbumZip", timeout=60*20)
             os.remove(path[0])
         else:
             for i in path:
-                client.sendFile(data["chatId"], i, {"quotedMsg":data['messageId']}, "AlbumZip", timeout=60*20)
+                client.sendFile(data["chatId"], i, {"quotedMsg":data["messageId"]}, "AlbumZip", timeout=60*20)
             for i in path:
                 os.remove(i)
     except Exception as error:
@@ -379,39 +379,39 @@ def lss(data, client):
     
     def search(item):
         try:
-            return music.search(item, filter='songs')
+            return music.search(item, filter="songs")
         except Exception as e:
-            errors.append((item, str(e)))
+            # errors.append((item, str(e)))
             return None
 
-    text = str(data['text'].lower()).removeprefix('!lss').strip()
+    text = str(data["text"].lower()).removeprefix("!lss").strip()
     
     results = search(text)
     
     itemsstr = "*Top Search Results:*\n\n"
 
     for idx, item in enumerate(results):
-        itemsstr += f"{idx+1}. {item['title']} - {item['artists'][0]['name']}\n"
+        itemsstr += f"{idx+1}. {item["title"]} - {item["artists"][0]["name"]}\n"
 
-    client.sendText(data['chatId'], itemsstr, {"quotedMsg":data['messageId']})
+    client.sendText(data["chatId"], itemsstr, {"quotedMsg":data["messageId"]})
 
 def lsa(data, client):
     """Send a list of the top search results from a search term."""
     
     def search(item):
         try:
-            return music.search(item, filter='albums')
+            return music.search(item, filter="albums")
         except Exception as e:
-            errors.append((item, str(e)))
+            # errors.append((item, str(e)))
             return None
 
-    text = str(data['text'].lower()).removeprefix('!lsa').strip()
+    text = str(data["text"].lower()).removeprefix("!lsa").strip()
     
     results = search(text)
     
     itemsstr = "*Top Search Results:*\n\n"
 
     for idx, item in enumerate(results):
-        itemsstr += f"{idx+1}. {item['title']} - {item['artists'][0]['name']}\n"
+        itemsstr += f"{idx+1}. {item["title"]} - {item["artists"][0]["name"]}\n"
 
-    client.sendText(data['chatId'], itemsstr, {"quotedMsg":data['messageId']})
+    client.sendText(data["chatId"], itemsstr, {"quotedMsg":data["messageId"]})

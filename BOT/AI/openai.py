@@ -81,7 +81,7 @@ def _format_user_message(data: dict) -> str:
         qtxt = data.get("quotedText")
         qfrom = data.get("quotedParticipant")
         if qtxt:
-            parts.append(f"(quoted from {qfrom or 'unknown'}): {qtxt}")
+            parts.append(f"(quoted from {qfrom or "unknown"}): {qtxt}")
     return "\n".join(parts)
 
 SYSTEM_PROMPT = """

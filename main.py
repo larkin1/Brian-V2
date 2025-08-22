@@ -27,7 +27,7 @@ creator = Create(
 client = creator.start()
 
 HEALTH_CHECK_INTERVAL = 10 # seconds
-MAX_FAILED_PINGS = 3
+MAX_FAILED_PINGS = 2
 failed_pings = 0
 
 
@@ -38,16 +38,35 @@ def health_check_loop():
     There is prolly a better way than just restarting the whole bot but ehh.
     """
     global failed_pings
+    
     while True:
+        
         try:
             client.getHostDevice()  # Harmless Method to check browser state
             failed_pings = 0  # Reset on success
+            
         except Exception as e:
             failed_pings += 1
-            print(f"[WA-HEALTH] Health check failed ({failed_pings}/{MAX_FAILED_PINGS}): {e}")
+            
+            message = (
+                f"{utils.Colors.Red}[ERROR] "
+                f"{utils.Colors.White}HealthCheck: "
+                f"{utils.Colors.Blue}Fault ({failed_pings}/{MAX_FAILED_PINGS}): {e}"
+            )
+            print(message)
+            
             if failed_pings >= MAX_FAILED_PINGS:
-                print("[WA-HEALTH] Max failed health checks reached. Restarting chatbot...")
+                
+                message = (
+                    f"{utils.Colors.Red}[ERROR] "
+                    f"{utils.Colors.White}HealthCheck: "
+                    f"{utils.Colors.Blue}Max checks reached..."
+                    f"{utils.Colors.White}\nRestarting..."
+                )
+                print(message)
+                                
                 os.execv(sys.executable, [sys.executable] + sys.argv)
+                
         time.sleep(HEALTH_CHECK_INTERVAL)
 
 
@@ -55,8 +74,13 @@ def log_and_notify_admin(msg):
     """
     Logs a message and sends it to the admin.
     """
-    print(f"[WA-CONN] {msg}")
-
+    message = (
+        f"{utils.Colors.Red}[Error] "
+        f"{utils.Colors.White}StateHandler: "
+        f"{utils.Colors.Blue}{msg}"
+    )
+    print(message)
+    
     # I got sick of constant messages, thus the commented out section.
     # try:
     #     client.sendText(Admins[0], f"[WA-CONN] {msg}")
@@ -87,13 +111,36 @@ def handle_state_change(state):
         log_and_notify_admin("WhatsApp client error. Exiting.")
         sys.exit(1)
 
+def database_save(data):
+    try:
+        DbMgmt.saveRecord(
+            data['chatId'], 
+            datetime.datetime.now(datetime.UTC).timestamp(), 
+            data['text'], 
+            data['authorId'], 
+            data['messageId']
+        )
+    except: # if the db is in use, retry with backoff
+        for i in range(4): 
+            try:
+                DbMgmt.saveRecord(
+                    data['chatId'], 
+                    datetime.datetime.now(datetime.UTC).timestamp(), 
+                    data['text'], 
+                    data['authorId'], 
+                    data['messageId']
+                )
+                break
+            except: time.sleep(i)
+
 
 def handle_new_message(msg):
     """Function to handle new messages received by the client."""
     global client
     
     if (
-        str(msg.get("chatId").get("_serialized")) != "status@broadcast" 
+        str(msg.get("chatId").get("_serialized"))
+        != "status@broadcast" 
         and msg.get("body")
     ): # checking that the message is valid and not a status message
 
@@ -108,28 +155,12 @@ def handle_new_message(msg):
             pass
 
         # Save the message to the database
-        try:
-            DbMgmt.saveRecord(
-                data['chatId'], 
-                datetime.datetime.now(datetime.UTC).timestamp(), 
-                data['text'], 
-                data['authorId'], 
-                data['messageId']
-            )
-        except: # if the db is in use, retry with backoff
-            for i in range(4): 
-                try:
-                    DbMgmt.saveRecord(
-                        data['chatId'], 
-                        datetime.datetime.now(datetime.UTC).timestamp(), 
-                        data['text'], 
-                        data['authorId'], 
-                        data['messageId']
-                    )
-                    break
-                except: time.sleep(i)
+        threading.Thread(
+            target=database_save, 
+            args=(data,)
+        ).start()
 
-        # Print the message in ~~fancy~~
+        # Print the message in ~fancy~
         utils.printMessage(
             data['text'], 
             data['authorId'], 
@@ -189,7 +220,7 @@ if __name__ == "__main__":
 
     print("Initialised the client successfully!")
 
-    client.sendText(Admins[0], "Brian (v2) started successfully!")
+    client.sendText(Admins[0], "Brian started successfully!")
 
     # Add Listen To New Message
 
