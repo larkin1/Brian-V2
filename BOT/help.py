@@ -1,9 +1,11 @@
-from BOT.Commands import userCommands, adminCommands
-from BOT.globals import Admins
+
 # Help Command. Routes appropriate help messages to the user.
 
 def help(data, client):
     """Sends a help message to the user."""
+
+    from BOT.Commands import userCommands, adminCommands
+    from BOT.globals import Admins
 
     if data["chatId"] in Admins:
         userCommands = adminCommands
