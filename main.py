@@ -225,8 +225,10 @@ if __name__ == "__main__":
 
     print("Initialised the client successfully!")
 
-    client.sendText(Admins[0], "Brian started successfully!")
-
+    try:
+        client.sendText(Admins[0], "Brian started successfully!")
+    except:
+        pass
     # Add Listen To New Message
 
     creator.client.onAnyMessage(handle_new_message)
