@@ -23,7 +23,8 @@ creator = Create(
     headless=True, 
     catchQR=utils.catchQR, 
     logQR=True, 
-    qr='terminal'
+    qr='terminal',
+    version="2.3000.1026251599-alpha"
 )
 
 client = creator.start()
