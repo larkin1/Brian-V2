@@ -3,6 +3,8 @@ import time
 import threading
 import sys
 import os
+import shutil
+from pathlib import Path
 
 from WPP_Whatsapp import Create
 
@@ -30,6 +32,9 @@ HEALTH_CHECK_INTERVAL = 10 # seconds
 MAX_FAILED_PINGS = 2
 failed_pings = 0
 
+target = Path("TEMP")
+if target.exists():
+    shutil.rmtree(target)
 
 def health_check_loop():
     """
