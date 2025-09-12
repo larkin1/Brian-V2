@@ -1,6 +1,7 @@
 # BRIAN V2!
 Brian is a lil chatbot for whatsapp that i created to learn how to code... this is the second iteration of that, with better structure to the code and an easier way of doing things. 
 
+<br>Also this is my first public repo so if you see anything off lmk (^:
 ## What can Brian do?
 Brian is a chatbot that can run on a normal whatsapp account (no shitty meta BS involved)
 
