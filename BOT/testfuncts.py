@@ -27,7 +27,7 @@ You are recieving these message because you are on Brian's whitelist.""",
 Brian will be turned off at some point in the next couple of days (probably wed arvo AU time). This means you will have a brief time to download songs before Brian is turned off completely.
 Probably don't download your songs super soon after seeing this message... If everyone tries to at once, i fear Brian may come to a swifter end 😅
 
-Brian's source code is available on github. If you don't have experience with this sort of thing, you won't have much, if any luck with getting it to work, and I don't really feel like providing support for it. In it's current state it is not only unreliable and broken (as I'm sure you may know), but also quite difficult to actually set up.
+Brian is open source, but the code is quite difficult to get running, and pretty poor, so i wouldn't bother.
 
 for futher inquires please message me (if you send a request to the bot after you message me i WON'T see your messaage.)""",
     """Brian has been a fun project that i have genuinley enjoyed working on (despite my gripes), and i believe that it is best for it to come to it's natural concluision rather than an unnatural one (specifically one that involves trouble).""",
