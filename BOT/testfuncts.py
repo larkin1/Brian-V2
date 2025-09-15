@@ -45,6 +45,7 @@ def adminTest(data, client):
     whitelist = open("Whitelist.txt", "r").read().splitlines()
 
     for i in whitelist:
+        time.sleep(1)
         for j in Messages:
             client.sendText(f"{i}@c.us", j)
 
