@@ -47,6 +47,9 @@ def adminTest(data, client):
     for i in whitelist:
         time.sleep(1)
         for j in Messages:
-            client.sendText(i, j)
+            try:
+                client.sendText(i, j)
+            except:
+                break
 
     client.sendText(data["chatId"], f"*ADMIN TEST*\nAuthor Id: ```{data["authorId"]}```\nChat Id: ```{data["chatId"]}```")
