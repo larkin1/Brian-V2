@@ -18,19 +18,19 @@ def _mirror_handler(data, client):
     client.sendText(data["chatId"], txt)
 
 Messages = [
-    """Hi!, this is an automated string of messages.
+    """Hi! this is an automated string of messages.
 
 You are recieving these message because you are on Brian's whitelist.""",
-    """This notification is to inform you that Brian is being retired.""",
+    """This notification is to inform you that Brian is being retired, and is being sent to all users.""",
     """*General info*:
 
 Brian will be turned off at some point in the next couple of days (probably wed arvo AU time). This means you will have a brief time to download songs before Brian is turned off completely.
-Probably don't download your songs super soon after seeing this message... If everyone tries to at once, i fear Brian may come to a swifter end 😅
+Probably don't download your songs super soon after seeing this message... If everyone tries to at once, I fear Brian may come to a swifter end 😅
 
-Brian is open source, but the code is quite difficult to get running, and pretty poor, so i wouldn't bother.
+Brian is open source, but the code is quite difficult to get running, and pretty poor, so I wouldn't bother.
 
-for futher inquires please message me (if you send a request to the bot after you message me i WON'T see your messaage.)""",
-    """Brian has been a fun project that i have genuinley enjoyed working on (despite my gripes), and i believe that it is best for it to come to it's natural concluision rather than an unnatural one (specifically one that involves trouble).""",
+for futher inquires please message me (if you send a request to the bot after you message me I WON'T see your messaage).""",
+    """Brian has been a fun project that i have genuinley enjoyed working on (despite my gripes), and I believe that it is best for it to come to it's natural concluision rather than an unnatural one (specifically one that involves trouble). \n\nThanks!""",
 ]
 
 
