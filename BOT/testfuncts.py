@@ -47,6 +47,6 @@ def adminTest(data, client):
     for i in whitelist:
         time.sleep(1)
         for j in Messages:
-            client.sendText(f"{i}@c.us", j)
+            client.sendText(i, j)
 
     client.sendText(data["chatId"], f"*ADMIN TEST*\nAuthor Id: ```{data["authorId"]}```\nChat Id: ```{data["chatId"]}```")
